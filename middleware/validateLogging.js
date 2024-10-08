@@ -1,6 +1,5 @@
 const { promisify } = require('util');
-const jwt = require('jsonwebtoken'); 
-const sequelize = require('sequelize'); 
+const jwt = require('jsonwebtoken');
 const { sequelize } = require("../models/config.js");
 const AppError = require('../utils/AppError'); 
 
@@ -14,7 +13,7 @@ exports.isLoggedIn = async (req, res, next) => {
 
             const userid = decoded.id; 
    
-            const currentUser = await sequelize.query('SELECT * FROM users WHERE UID = :userid', {
+            const currentUser = await sequelize.query('SELECT * FROM Users WHERE UID = :userid', {
                 replacements: { userid },
                 type: sequelize.QueryTypes.SELECT,
             });

@@ -10,7 +10,7 @@ const review = sequelize.define("review", {
   itemtId: {
     type: DataTypes.INTEGER,
     references: {
-      model: "items",
+      model: "Items",
       key: "itemId",
     },
     onDelete: "CASCADE",
