@@ -39,10 +39,21 @@ const itemDelete = async (req, res) => {
 
 };
 
+const filterByMinMax = async (req, res) => {
+
+    const result = await item.filterItemsByMinMax(req.params.way + "lyRate", req.params.min, req.params.max);
+    
+    if (result.length === 0) {
+        res.status(204).json({result: "no content"});
+        return;
+    }
+    res.status(200).json(result);
+}
+
 const itemObj = (req, res, next) => {
 
     req.body.ownerID = res.locals.user.UID;
     next();
 }
 
-module.exports = {itemAdd, itemObj, itemDelete};
+module.exports = {itemAdd, itemObj, itemDelete, filterByMinMax};

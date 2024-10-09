@@ -90,12 +90,26 @@ const deleteItemById = async (id) => {
 const findItemById = async (id) => {
     const sqlQuery = `SELECT itemId FROM Items WHERE itemId=:itemId`;
 
-    const results = await sequelize.query(sqlQuery, {
+    return await sequelize.query(sqlQuery, {
         replacements: {itemId: id},
         type: QueryTypes.SELECT
     });
-
-    return results;
 };
 
-module.exports = {item, insertItem, findItemById, deleteItemById};
+const filterItemsByMinMax = async (way, min, max) => {
+
+    const sqlQuery = `SELECT * FROM Items 
+                      INNER JOIN PriceModels 
+                      ON Items.priceModelId = PriceModels.priceModelId
+                      WHERE ${way} >= :min AND ${way} <= :max
+                    `;
+
+    return await sequelize.query(sqlQuery, {
+        replacements: {
+            min: min,
+            max: max,
+        },
+        type: QueryTypes.SELECT
+    });
+};
+module.exports = {item, insertItem, findItemById, deleteItemById, filterItemsByMinMax};

@@ -49,4 +49,5 @@ const insertPricing = async (data) => {
     return results;
 
 };
-module.exports = {priceModel , insertPricing};
+
+module.exports = {priceModel, insertPricing};
