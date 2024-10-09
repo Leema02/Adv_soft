@@ -1,5 +1,7 @@
-const {DataTypes, QueryTypes} = require("sequelize");
+const {DataTypes, QueryTypes,Op} = require("sequelize");
 const {sequelize} = require("./config.js");
+
+
 
 const item = sequelize.define("Item", {
     itemId: {
@@ -67,9 +69,12 @@ const insertItem = async (itemObj) => {
     const results = await sequelize.query(sqlQuery, {
         replacements: {
             ownerID: itemObj.ownerID,
-            catId: itemObj.catId, priceModelId: itemObj.priceModelId,
-            itemName: itemObj.itemName, description: itemObj.Description,
-            conditionBefore: itemObj.conditionBefore, securityDeposit: itemObj.SecuirityDeposit
+            catId: itemObj.catId,
+             priceModelId: itemObj.priceModelId,
+            itemName: itemObj.itemName, 
+            description: itemObj.description,
+            conditionBefore: itemObj.conditionBefore, 
+            securityDeposit: itemObj.SecuirityDeposit
         },
         type: QueryTypes.INSERT
     })
@@ -78,4 +83,89 @@ const insertItem = async (itemObj) => {
 
 
 };
-module.exports = {item, insertItem};
+
+
+const findItemById=async (id) => {
+    const sqlQuery = `SELECT * from Items where itemId =:id `;
+
+    const result = await sequelize.query(sqlQuery, {
+        replacements: { id },
+        type: QueryTypes.SELECT,
+    });
+    console.log("Query result:", result);
+
+    return result[0];
+};
+
+
+const updateItem = async (itemId, updateData) => {
+    const fields = [];
+    const replacements = { itemId };
+
+    if (updateData.catId) {
+        fields.push(`catId = :catId`);
+        replacements.catId = updateData.catId;
+    }
+    if (updateData.itemName) {
+        fields.push(`ItemName = :ItemName`);
+        replacements.ItemName = updateData.itemName;
+    }
+    if (updateData.Availability) {
+        fields.push(`Availability = :Availability`);
+        replacements.Availability = updateData.Availability;
+    }
+    if (updateData.Description) {
+        fields.push(`Description = :Description`);
+        replacements.Description = updateData.Description;
+    }
+    if (updateData.ConditionBefore) {
+        fields.push(`ConditionBefore = :ConditionBefore`);
+        replacements.ConditionBefore = updateData.ConditionBefore;
+    }
+    if (updateData.SecurityDeposit) {
+        fields.push(`SecurityDeposit = :SecurityDeposit`);
+        replacements.SecurityDeposit = updateData.SecurityDeposit;
+    }
+
+    const sqlQuery = `
+        UPDATE Items 
+        SET 
+            ${fields.join(', ')}
+        WHERE itemId = :itemId
+    `;
+
+    await sequelize.query(sqlQuery, {
+        replacements,
+        type: QueryTypes.UPDATE
+    });
+};
+
+
+const ItemsNearME = async (ownersIdArray) => {
+    if (!Array.isArray(ownersIdArray) || ownersIdArray.length === 0) {
+        throw new Error("Invalid ownersIdArray");
+    }
+
+    const ownerIdsString = ownersIdArray.join(", ");
+
+    console.log(ownerIdsString)
+
+    const sqlQuery = `
+        SELECT i.*,p.dailyRate, p.weeklyRate, p.monthlyRate, p.discountRate 
+        FROM Items i
+        LEFT JOIN PriceModels p ON i.priceModelId = p.priceModelId
+        WHERE i.ownerId IN (${ownerIdsString})
+    `;
+
+    const result = await sequelize.query(sqlQuery, {
+        type: QueryTypes.SELECT,
+    });
+
+    console.log("Query result:", result); 
+
+    return result;
+};
+
+
+
+module.exports = {item, insertItem,findItemById,updateItem,ItemsNearME};

@@ -1,5 +1,5 @@
-const { DataTypes } = require("sequelize");
 const { sequelize } = require("./config.js");
+const {DataTypes, QueryTypes} = require("sequelize");
 
 const user = sequelize.define("User", {
   UID: {
@@ -49,4 +49,17 @@ const user = sequelize.define("User", {
   },
 });
 
-module.exports = user;
+const OwnerNearME = async (Usercity) => {
+  const sqlQuery = `SELECT UID FROM Users WHERE City = :Usercity AND role = 'o'`;
+
+  const result = await sequelize.query(sqlQuery, {
+      replacements: { Usercity },
+      type: QueryTypes.SELECT,
+  });
+  console.log("Query result:", result);
+
+  return result;
+}
+
+
+module.exports ={user,OwnerNearME};

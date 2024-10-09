@@ -15,6 +15,7 @@ const validateItems = () =>  [
     , body('SecuirityDeposit').isFloat({min: 0}).withMessage('Security deposit must be a positive number')
 ];
 
+
 const validateRequest = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
