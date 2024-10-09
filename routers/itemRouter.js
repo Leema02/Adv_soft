@@ -21,7 +21,6 @@ router.put('/:id',
 
 router.get('/NearMe',
     validateLogging.isLoggedIn,
-    validateRole('u'),
     itemController.itemNearME);
 
     
