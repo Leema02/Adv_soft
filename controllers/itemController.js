@@ -20,10 +20,29 @@ const itemAdd = async (req, res) => {
 
 };
 
+const itemDelete = async (req, res) => {
+
+    if (!req.params.id) {
+        res.status(400).json({error: "you have to specify id to delete !"});
+        return;
+    }
+
+    const result = await item.findItemById(req.params.id);
+    if (result.length === 0) {
+        res.status(400).json({errors: "there is no item with id " + req.params.id});
+        return;
+    }
+
+    const itemDelRes = await item.deleteItemById(req.params.id);
+
+    res.status(200).json({success: "item with id " + req.params.id + " has been deleted"});
+
+};
+
 const itemObj = (req, res, next) => {
 
     req.body.ownerID = res.locals.user.UID;
     next();
 }
 
-module.exports = {itemAdd, itemObj};
+module.exports = {itemAdd, itemObj, itemDelete};

@@ -12,5 +12,7 @@ router.post('/add',
     itemController.itemObj,
     itemController.itemAdd);
 
+router.delete('/delete/:id', validateLogging.isLoggedIn, itemController.itemDelete);
+
 
 module.exports = router;

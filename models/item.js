@@ -76,6 +76,26 @@ const insertItem = async (itemObj) => {
 
     return results;
 
-
 };
-module.exports = {item, insertItem};
+const deleteItemById = async (id) => {
+    const sqlQuery = `DELETE FROM Items WHERE itemId=:itemId`;
+
+    const results = await sequelize.query(sqlQuery, {
+        replacements: {itemId: id},
+        type: QueryTypes.DELETE
+    });
+
+    return results;
+};
+const findItemById = async (id) => {
+    const sqlQuery = `SELECT itemId FROM Items WHERE itemId=:itemId`;
+
+    const results = await sequelize.query(sqlQuery, {
+        replacements: {itemId: id},
+        type: QueryTypes.SELECT
+    });
+
+    return results;
+};
+
+module.exports = {item, insertItem, findItemById, deleteItemById};
