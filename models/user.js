@@ -61,5 +61,18 @@ const OwnerNearME = async (Usercity) => {
   return result;
 }
 
+const findUserById=async(id)=>{
+
+  const sqlQuery = `SELECT * FROM Users WHERE  UID =: id`;
+
+  const result = await sequelize.query(sqlQuery, {
+      replacements: { id },
+      type: QueryTypes.SELECT,
+  });
+  console.log("Query result:", result);
+
+  return result[0];
+}
+
 
 module.exports ={user,OwnerNearME};

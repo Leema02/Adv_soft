@@ -48,6 +48,11 @@ const Rental = sequelize.define("rent", {
   },
   damageFee:{
     type: DataTypes.DOUBLE,
+    defaultValue:0.0,
+  },
+  lateDays:{
+    type: DataTypes.INTEGER,
+    defaultValue:0,
   },
   Status: {
     type: DataTypes.STRING,//good (owner) inspect(expert --> damaged good) owner(rented) returned
@@ -61,5 +66,7 @@ const Rental = sequelize.define("rent", {
  
 
 });
+
+
 
 module.exports = Rental;
