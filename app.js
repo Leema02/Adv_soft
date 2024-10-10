@@ -2,6 +2,8 @@ const express = require('express');
 const authRouter = require('./routers/auth'); // Adjust the path accordingly
 const itemRouter = require('./routers/itemRouter');
 const catRouter = require('./routers/categoryRouter');
+const eventRouter = require('./routers/eventRouter');
+
 
 
 
@@ -15,6 +17,9 @@ app.use(cookieParser());
 app.use('/', authRouter); // Use the auth router
 app.use('/item',itemRouter);
 app.use('/cat',catRouter);
+app.use('/event',eventRouter);
+
+
 
 app.listen(5000, () => {
     console.log('Server running on http://localhost:5000');

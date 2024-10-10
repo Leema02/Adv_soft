@@ -1,9 +1,11 @@
 const pricing = require('../models/pricing');
-const item = require('../models/item');
+const event = require('../models/event');
+
 
 const priceCalculate = async (itemId, startDate, endDate) => {
-    const priceModelId = await item.getPriceModelId(itemId);
-    const priceModel = await pricing.findPriceModelById(priceModelId);
+    const item = await item.findItemById(itemId);
+    const priceModel = await pricing.findPriceModelById(item.priceModelId);
+    const currentEvents = await event.getEventsByCatId(item.catId);
 
     const millisecondsInDay = 1000 * 60 * 60 * 24;
     let durationInDays = Math.ceil((new Date(endDate) - new Date(startDate)) / millisecondsInDay); 
@@ -25,11 +27,14 @@ const priceCalculate = async (itemId, startDate, endDate) => {
         totalPrice += durationInDays * priceModel.dailyRate;
     }
 
-    if (priceModel.discountRate) {
+    if (currentEvents && currentEvents.length > 0) {
+        const eventDiscount = currentEvents[0].discountPercentage;
+        totalPrice -= totalPrice * (eventDiscount / 100);
+    } else if (priceModel.discountRate) {
         totalPrice -= totalPrice * (priceModel.discountRate / 100); 
     }
-    
+
     return totalPrice;
 };
 
-module.exports = priceCalculate;
+module.exports = {priceCalculate};

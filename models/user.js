@@ -75,4 +75,4 @@ const findUserById=async(id)=>{
 }
 
 
-module.exports ={user,OwnerNearME};
+module.exports ={user,OwnerNearME,findUserById};

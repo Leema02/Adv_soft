@@ -162,25 +162,13 @@ const ItemsNearME = async (ownersIdArray) => {
 };
 
 
-const getPriceModelId=async(itemId)=>{
-    const sqlQuery = `SELECT priceModelId from Items where itemId =:itemId `;
-
-    const result = await sequelize.query(sqlQuery, {
-        replacements: { itemId },
-        type: QueryTypes.SELECT,
-    });
-    console.log("Query result:", result);
-
-    return result[0];
-}
 
 
-
-const deleteItemById = async (id) => {
+const deleteItemById = async (itemId) => {
     const sqlQuery = `DELETE FROM Items WHERE itemId=:itemId`;
 
     const results = await sequelize.query(sqlQuery, {
-        replacements: {itemId: id},
+        replacements: {itemId},
         type: QueryTypes.DELETE
     });
 
@@ -204,5 +192,6 @@ const filterItemsByMinMax = async (way, min, max) => {
     });
 };
 
-module.exports = {item, insertItem,findItemById,updateItem,ItemsNearME,deleteItemById, filterItemsByMinMax,getPriceModelId};
+
+module.exports = {item, insertItem,findItemById,updateItem,ItemsNearME,deleteItemById, filterItemsByMinMax};
 
