@@ -32,8 +32,8 @@ const user = sequelize.define("User", {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  UPoints: {
-    type: DataTypes.INTEGER, // money back 
+  cashBalance: {
+    type: DataTypes.DOUBLE, // money back 
     defaultValue: 0,
   },
   avgRating: {
@@ -41,7 +41,7 @@ const user = sequelize.define("User", {
     defaultValue: 0.0,
   },
   loyalty: {
-    type: DataTypes.STRING, // .1  ==> 1 silver 2 gold  
+    type: DataTypes.DOUBLE, // .1  ==> 1 silver 2 gold  
   },
   role: {
     type: DataTypes.ENUM("u", "a", "e","o"),

@@ -145,11 +145,8 @@ const ItemsNearME = async (ownersIdArray) => {
     if (!Array.isArray(ownersIdArray) || ownersIdArray.length === 0) {
         throw new Error("Invalid ownersIdArray");
     }
-
     const ownerIdsString = ownersIdArray.join(", ");
-
     console.log(ownerIdsString)
-
     const sqlQuery = `
         SELECT i.*,p.dailyRate, p.weeklyRate, p.monthlyRate, p.discountRate 
         FROM Items i
@@ -167,5 +164,16 @@ const ItemsNearME = async (ownersIdArray) => {
 };
 
 
+const getPriceModelId=async(itemId)=>{
+    const sqlQuery = `SELECT priceModelId from Items where itemId =:itemId `;
 
-module.exports = {item, insertItem,findItemById,updateItem,ItemsNearME};
+    const result = await sequelize.query(sqlQuery, {
+        replacements: { itemId },
+        type: QueryTypes.SELECT,
+    });
+    console.log("Query result:", result);
+
+    return result[0];
+}
+
+module.exports = {item, insertItem,findItemById,updateItem,ItemsNearME,};

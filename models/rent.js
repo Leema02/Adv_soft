@@ -46,6 +46,9 @@ const Rental = sequelize.define("rent", {
   endDate: {
     type: DataTypes.DATE,
   },
+  damageFee:{
+    type: DataTypes.DOUBLE,
+  },
   Status: {
     type: DataTypes.STRING,//good (owner) inspect(expert --> damaged good) owner(rented) returned
   },
@@ -55,6 +58,7 @@ const Rental = sequelize.define("rent", {
   totalPrice: {
     type: DataTypes.DOUBLE,
   },
+ 
 
 });
 

@@ -27,6 +27,11 @@ const priceModel = sequelize.define(
         discountRate: {
             type: DataTypes.DOUBLE,
         },
+        dailyLateFee:{
+            type: DataTypes.DOUBLE,
+            defaultValue: -1.0,
+
+        }
     },
     {
         timestamps: false,
@@ -101,6 +106,7 @@ if(fields.length>0){
     });
 }
 });
+
 
 
 
