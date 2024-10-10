@@ -1,8 +1,6 @@
 const {DataTypes, QueryTypes,Op} = require("sequelize");
 const {sequelize} = require("./config.js");
 
-
-
 const item = sequelize.define("Item", {
     itemId: {
         type: DataTypes.INTEGER,
@@ -176,4 +174,35 @@ const getPriceModelId=async(itemId)=>{
     return result[0];
 }
 
-module.exports = {item, insertItem,findItemById,updateItem,ItemsNearME,};
+
+
+const deleteItemById = async (id) => {
+    const sqlQuery = `DELETE FROM Items WHERE itemId=:itemId`;
+
+    const results = await sequelize.query(sqlQuery, {
+        replacements: {itemId: id},
+        type: QueryTypes.DELETE
+    });
+
+    return results;
+};
+
+const filterItemsByMinMax = async (way, min, max) => {
+
+    const sqlQuery = `SELECT * FROM Items 
+                      INNER JOIN PriceModels 
+                      ON Items.priceModelId = PriceModels.priceModelId
+                      WHERE ${way} >= :min AND ${way} <= :max
+                    `;
+
+    return await sequelize.query(sqlQuery, {
+        replacements: {
+            min: min,
+            max: max,
+        },
+        type: QueryTypes.SELECT
+    });
+};
+
+module.exports = {item, insertItem,findItemById,updateItem,ItemsNearME,deleteItemById, filterItemsByMinMax,getPriceModelId};
+

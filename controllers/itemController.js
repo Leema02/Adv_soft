@@ -85,6 +85,35 @@ const itemNearME = catchAsync(async (req, res, next) => {
 
 
 
+const itemDelete = async (req, res) => {
+
+    if (!req.params.id) {
+        res.status(400).json({error: "you have to specify id to delete !"});
+        return;
+    }
+
+    const result = await item.findItemById(req.params.id);
+    if (result.length === 0) {
+        res.status(400).json({errors: "there is no item with id " + req.params.id});
+        return;
+    }
+
+    const itemDelRes = await item.deleteItemById(req.params.id);
+
+    res.status(200).json({success: "item with id " + req.params.id + " has been deleted"});
+
+};
+
+const filterByMinMax = async (req, res) => {
+
+    const result = await item.filterItemsByMinMax(req.params.way + "lyRate", req.params.min, req.params.max);
+    
+    if (result.length === 0) {
+        res.status(204).json({result: "no content"});
+        return;
+    }
+    res.status(200).json(result);
+}
 
 const itemObj = (req, res, next) => {
 
@@ -92,4 +121,7 @@ const itemObj = (req, res, next) => {
     next();
 }
 
-module.exports = {itemAdd, itemObj,itemUpdate,itemNearME};
+
+
+module.exports = {itemAdd, itemObj, itemDelete, filterByMinMax,itemUpdate,itemNearME};
+

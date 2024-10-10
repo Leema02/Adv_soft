@@ -28,5 +28,10 @@ router.get('/NearMe',
 
 
 
+router.delete('/delete/:id', validateLogging.isLoggedIn, itemController.itemDelete);
+
+router.get('/:way/:min/:max',
+    validateItem.identifyPriceWayAndValidate,
+    itemController.filterByMinMax)
 
 module.exports = router;
