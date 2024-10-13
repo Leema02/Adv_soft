@@ -54,4 +54,15 @@ const item = sequelize.define("Item", {
   },
 });
 
-module.exports = item;
+const getItemsByCategoryAndAvailability = async (catId, availability) => {
+  const sqlQuery = `SELECT * FROM Items WHERE catId = :catId AND Availability = :availability`;
+
+  return await sequelize.query(sqlQuery, {
+      replacements: { catId: catId, availability: availability },
+      type: QueryTypes.SELECT
+  });
+};
+
+module.exports = {
+  item, getItemsByCategoryAndAvailability
+};
