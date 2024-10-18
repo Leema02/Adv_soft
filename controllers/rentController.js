@@ -1,6 +1,7 @@
 const Rent = require('../models/rent');
 const Item = require('../models/item');
 const Expert = require('../models/expert');
+const  sendEmail  = require('../utils/emailService');
 
 
 const catchAsync = require('../utils/catchAsyn');
@@ -75,13 +76,27 @@ const statusRentList = catchAsync(async (req, res) => {
     
 });
 
-// const updateRentStatus= catchAsync(async (req, res) => {
-
-   
-   
-// });
+const updateRentStatus= catchAsync(async (req, res) => {
 
 
-module.exports = {rentList,rentAdd,rentDelete,rentList,statusRentList};
+    const userId=res.locals.user.UID
+    const status = req.params.status;
+    const rentalId = req.params.rentalId;
+
+    const rentToUpdate = await Rent.findRentalById(rentalId);
+    if (rentToUpdate.length === 0)
+        return res.status(400).json({errors: "there is no rent with id " + id});
+    
+    const itemRent = await Item.findItemById(rentToUpdate.itemtId);
+    if (itemRent.ownerId!=ownerId) {
+        return res.status(400).json({errors: "You do not have permission to update this rent."});
+     }
+    const rents=await Rent.updateRentStatus(rentalId,status);
+    res.status(200).json(rents);
+
+});
+
+
+module.exports = {rentList,rentAdd,rentDelete,rentList,statusRentList,updateRentStatus};
 
 

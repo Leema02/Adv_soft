@@ -233,8 +233,23 @@ return await sequelize.query(query, {
 
 }
 
+const updateRentStatus=async(rentalId,status)=>{
+
+  const sqlQuery = `
+  UPDATE rents 
+  SET Status =:status
+  WHERE rentalId = :rentalId
+`;
+
+await sequelize.query(sqlQuery, {
+  replacements: { status,rentalId },
+  type: QueryTypes.UPDATE
+});
+
+}
+
 
 
 module.exports = {Rental,findRentalById,findAllRentalItemIn,updateEndDate,rentAdd,checkAvailableRent,rentDelete,rentList,
-  statusRentList,
+  statusRentList,updateRentStatus
 };
