@@ -56,15 +56,15 @@ const rentDelete = catchAsync(async (req, res) => {
 
 const rentList = catchAsync(async (req, res) => {
 
-    // const id=res.locals.user.UID
-    // const role=res.locals.user.role
-    // const rents=await Rent.rentList(id,role);
+     const id=res.locals.user.UID
+     const role=res.locals.user.role
+     const rents=await Rent.rentList(id,role);
     
-    // res.status(200).json(rents);
+     res.status(200).json(rents);
     
     });
 
 
-module.exports = {rentList,rentAdd,rentDelete};
+module.exports = {rentList,rentAdd,rentDelete,rentList};
 
 

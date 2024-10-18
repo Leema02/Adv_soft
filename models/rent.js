@@ -201,6 +201,25 @@ const rentDelete=async(rentId)=>{
 
 }
 
+const rentList = async (userId, role) => {
+  let query;
+
+  if (role === 'u') {
+      query = `SELECT * FROM Rents WHERE customerId = :userId ORDER BY startDate DESC`
+  } else if (role === 'o') {
+      query = `SELECT R.* FROM Rents AS R JOIN Items AS I ON R.itemtId = I.itemId 
+       WHERE I.ownerId = :userId ORDER BY R.startDate DESC;`
+  } else if (role === 'e') {
+      query = `SELECT * FROM Rents WHERE expertId = :userId ORDER BY startDate DESC`
+  }
+
+  return await sequelize.query(query, {
+      replacements: { userId },
+      type: sequelize.QueryTypes.SELECT,
+  });
+};
 
 
-module.exports = {Rental,findRentalById,findAllRentalItemIn,updateEndDate,rentAdd,checkAvailableRent,rentDelete};
+
+
+module.exports = {Rental,findRentalById,findAllRentalItemIn,updateEndDate,rentAdd,checkAvailableRent,rentDelete,rentList};
