@@ -16,7 +16,7 @@ router.post('/',
 
 router.put('/:id',
     validateLogging.isLoggedIn,
-    validateRole('o'),
+    validateRole(['o']),
     itemController.itemUpdate);
 
 router.get('/NearMe',

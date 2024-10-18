@@ -7,14 +7,14 @@ const validateRole = require('../middleware/validateRole');
 
 
 
-router.post('/',validateLogging.isLoggedIn,validateRole('o')
+router.post('/',validateLogging.isLoggedIn,validateRole(['u'])
 ,validateRent.validateRent(),validateRent.validateRequest,rentController.rentAdd);
+router.delete('/:id', validateLogging.isLoggedIn,validateRole(['o']), rentController.rentDelete);
 
-
-
-router.delete('/:id', validateLogging.isLoggedIn,validateRole('o'), rentController.rentDelete);
 router.get('/', validateLogging.isLoggedIn, rentController.rentList);
-router.get('/status/:status', validateLogging.isLoggedIn,validateRole('o'), rentController.statusRentList);
+router.get('/status/:status', validateLogging.isLoggedIn,validateRole(['o','e']), rentController.statusRentList);
+
+// router.put('',validateLogging.isLoggedIn,validateRole('o'), rentController.statusRentList)
 
 
 

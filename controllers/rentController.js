@@ -75,7 +75,11 @@ const statusRentList = catchAsync(async (req, res) => {
     
 });
 
+// const updateRentStatus= catchAsync(async (req, res) => {
 
+   
+   
+// });
 
 
 module.exports = {rentList,rentAdd,rentDelete,rentList,statusRentList};
