@@ -64,7 +64,20 @@ const rentList = catchAsync(async (req, res) => {
     
     });
 
+const statusRentList = catchAsync(async (req, res) => {
 
-module.exports = {rentList,rentAdd,rentDelete,rentList};
+     const id=res.locals.user.UID
+     const status = req.params.status;
+     console.log(status)
+     const rents=await Rent.statusRentList(id,status);
+    
+     res.status(200).json(rents);
+    
+});
+
+
+
+
+module.exports = {rentList,rentAdd,rentDelete,rentList,statusRentList};
 
 

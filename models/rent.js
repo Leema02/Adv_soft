@@ -219,7 +219,22 @@ const rentList = async (userId, role) => {
   });
 };
 
+const statusRentList=async(ownerId,status)=>{
+
+    query = `SELECT R.* FROM Rents AS R 
+    JOIN Items AS I ON R.itemtId = I.itemId 
+    WHERE I.ownerId = :ownerId AND R.Status = :status 
+    ORDER BY R.startDate DESC;`
+
+return await sequelize.query(query, {
+    replacements: { ownerId,status },
+    type: sequelize.QueryTypes.SELECT,
+});
+
+}
 
 
 
-module.exports = {Rental,findRentalById,findAllRentalItemIn,updateEndDate,rentAdd,checkAvailableRent,rentDelete,rentList};
+module.exports = {Rental,findRentalById,findAllRentalItemIn,updateEndDate,rentAdd,checkAvailableRent,rentDelete,rentList,
+  statusRentList,
+};
