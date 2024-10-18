@@ -37,14 +37,20 @@ const rentAdd = catchAsync(async (req, res) => {
 
 const rentDelete = catchAsync(async (req, res) => {
 
-    // const id = Number(req.params.id);
+    const id = Number(req.params.id);
+    const ownerId=res.locals.user.UID
 
-    // const rentId = await Rent.findRentyById(id);
-    // if (rentId.length === 0)
-    //     res.status(400).json({errors: "there is no rent with id " + id});
-
-    // await Rent.rentDelete(id);
-    // res.status(200).json({success: "rent with id " +id + " has been deleted successfully"});
+    const rentToDelete = await Rent.findRentalById(id);
+    if (rentToDelete.length === 0)
+        return res.status(400).json({errors: "there is no rent with id " + id});
+    
+    const itemRent = await Item.findItemById(rentToDelete.itemtId);
+    if (itemRent.ownerId!=ownerId) {
+        return res.status(400).json({errors: "You do not have permission to delete this rent."});
+     }
+    
+    await Rent.rentDelete(id);
+    return res.status(200).json({success: "rent with id " +id + " has been deleted successfully"});
 
 });
 

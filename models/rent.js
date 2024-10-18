@@ -1,4 +1,4 @@
-const { DataTypes } = require("sequelize");
+const {DataTypes, QueryTypes} = require("sequelize");
 const { sequelize } = require("./config.js");
 
 const Rental = sequelize.define("rent", {
@@ -189,5 +189,18 @@ const checkAvailableRent = async (itemId, startDate, endDate) => {
 };
 
 
+const rentDelete=async(rentId)=>{
+  const sqlQuery = `DELETE FROM rents WHERE rentalId=:rentId`;
 
-module.exports = {Rental,findRentalById,findAllRentalItemIn,updateEndDate,rentAdd,checkAvailableRent};
+  const results = await sequelize.query(sqlQuery, {
+      replacements: {rentId},
+      type: QueryTypes.DELETE
+  });
+
+  return results;
+
+}
+
+
+
+module.exports = {Rental,findRentalById,findAllRentalItemIn,updateEndDate,rentAdd,checkAvailableRent,rentDelete};
