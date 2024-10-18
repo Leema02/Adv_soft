@@ -7,7 +7,7 @@ const validateRole = require('../middleware/validateRole');
 
 
 
-router.post('/add',
+router.post('/',
     validateLogging.isLoggedIn,
     validateItem.validateItems(),
     validateItem.validateRequest,

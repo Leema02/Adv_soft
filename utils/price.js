@@ -37,4 +37,4 @@ const priceCalculate = async (itemId, startDate, endDate) => {
     return totalPrice;
 };
 
-module.exports = {priceCalculate};
+module.exports = priceCalculate;

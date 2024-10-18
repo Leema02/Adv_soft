@@ -1,3 +1,4 @@
+const Rent = require('../models/rent');
 
 
 const calculateLateDays=async(rental)=>{
@@ -14,5 +15,7 @@ const calculateLateDays=async(rental)=>{
     }
 
 }
+
+
 
 module.exports={calculateLateDays}
