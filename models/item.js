@@ -215,8 +215,18 @@ const getLikeItemName = async (catId, itemName) => {
         type: QueryTypes.SELECT
     })
 };
+
+const getItemsByCategoryAndAvailability = async (catId, availability) => {
+    const sqlQuery = `SELECT * FROM Items WHERE catId = :catId AND Availability = :availability`;
+  
+    return await sequelize.query(sqlQuery, {
+        replacements: { catId: catId, availability: availability },
+        type: QueryTypes.SELECT
+    });
+  };
+
 module.exports = {
     item, insertItem, findItemById, updateItem, ItemsNearME, deleteItemById,
-    filterItemsByMinMax, getItemByCatAndItemId,getLikeItemName
+    filterItemsByMinMax, getItemByCatAndItemId,getLikeItemName, getItemsByCategoryAndAvailability
 };
 
