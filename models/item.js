@@ -225,8 +225,51 @@ const getItemsByCategoryAndAvailability = async (catId, availability) => {
     });
   };
 
+  const getItemsByCategoryAndLoyalty = async (catId) => {
+    const sqlQuery = `
+      SELECT I.*, U.loyalty, U.role 
+      FROM Items I
+      JOIN Users U ON I.ownerId = U.UID
+      WHERE I.catId = :catId AND U.role = 'o'
+    `;
+  
+    const items = await sequelize.query(sqlQuery, {
+      replacements: { catId },
+      type: QueryTypes.SELECT,
+    });
+  
+    return items.map(item => {
+      const roundedLoyalty = Math.round(item.loyalty);
+      let loyaltyGrade;
+  
+      switch (roundedLoyalty) {
+        case 5:
+          loyaltyGrade = 'A'; // Best loyalty
+          break;
+        case 4:
+          loyaltyGrade = 'B';
+          break;
+        case 3:
+          loyaltyGrade = 'C';
+          break;
+        case 2:
+          loyaltyGrade = 'D';
+          break;
+        case 1:
+        default:
+          loyaltyGrade = 'E'; // Lowest loyalty
+      }
+  
+      return {
+        ...item, 
+        loyaltyGrade, 
+      };
+    });
+  };
+
 module.exports = {
     item, insertItem, findItemById, updateItem, ItemsNearME, deleteItemById,
-    filterItemsByMinMax, getItemByCatAndItemId,getLikeItemName, getItemsByCategoryAndAvailability
+    filterItemsByMinMax, getItemByCatAndItemId,getLikeItemName, getItemsByCategoryAndAvailability,
+    getItemsByCategoryAndLoyalty
 };
 
