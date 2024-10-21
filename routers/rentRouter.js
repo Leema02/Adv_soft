@@ -14,7 +14,7 @@ router.delete('/:id', validateLogging.isLoggedIn,validateRole(['o']), rentContro
 router.get('/', validateLogging.isLoggedIn, rentController.rentList);
 router.get('/status/:status', validateLogging.isLoggedIn,validateRole(['o','e']), rentController.statusRentList);
 
-router.put('/:rentalId/status/:status',validateLogging.isLoggedIn,validateRole(['o']), rentController.statusRentList)
+router.put('/:rentalId/status/:status',validateLogging.isLoggedIn,validateRole(['o']), rentController.updateRentStatus)
 
 
 

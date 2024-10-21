@@ -2,6 +2,10 @@ const Rent = require('../models/rent');
 const Item = require('../models/item');
 const Expert = require('../models/expert');
 const  sendEmail  = require('../utils/emailService');
+const  priceCalculate  = require('../utils/price');
+const  calculateLateDays  = require('../utils/rent');
+
+
 
 
 const catchAsync = require('../utils/catchAsyn');
@@ -56,6 +60,18 @@ const rentDelete = catchAsync(async (req, res) => {
 });
 
 const rentList = catchAsync(async (req, res) => {
+    // const receiver = 's12112422@stu.najah.edu';
+    // const subject = 'Welcome to our service';
+    // const message = 'Welcome! We are glad to have you.';
+
+    // try {
+    //     // This should call sendEmail
+    //     await sendEmail( receiver, subject, message);
+    //     console.log("Email send function called."); // This will confirm the call
+    // } catch (error) {
+    //     console.error(`Error sending email: ${error.message}`);
+    //     return res.status(500).json({ error: "Failed to send email." });
+    // }
 
      const id=res.locals.user.UID
      const role=res.locals.user.role
@@ -78,21 +94,52 @@ const statusRentList = catchAsync(async (req, res) => {
 
 const updateRentStatus= catchAsync(async (req, res) => {
 
-
-    const userId=res.locals.user.UID
+    const ownerId=res.locals.user.UID
     const status = req.params.status;
     const rentalId = req.params.rentalId;
 
     const rentToUpdate = await Rent.findRentalById(rentalId);
-    if (rentToUpdate.length === 0)
-        return res.status(400).json({errors: "there is no rent with id " + id});
+    if (!rentToUpdate)
+        return res.status(400).json({errors: "there is no rent with id " + rentalId});
     
     const itemRent = await Item.findItemById(rentToUpdate.itemtId);
     if (itemRent.ownerId!=ownerId) {
         return res.status(400).json({errors: "You do not have permission to update this rent."});
      }
     const rents=await Rent.updateRentStatus(rentalId,status);
-    res.status(200).json(rents);
+
+
+    if(status=="accept")
+    {
+        const price=await priceCalculate(rentToUpdate.itemtId,rentToUpdate.startDate,rentToUpdate.endDate)
+        await sendEmail("s12112422@stu.najah.edu","Update rent Status",`your rent with id  ${rentalId} to item ${rentToUpdate.itemtId} status update to ${status} your total price is ${price} for period from ${rentToUpdate.startDate} to ${rentToUpdate.endDate}`)
+
+    }
+    else if(status=="reject")
+    {
+        await sendEmail("s12112422@stu.najah.edu","Update rent Status",`Sorry!!,your rent with id  ${rentalId} to item ${rentToUpdate.itemtId} status update to ${status}`)
+    
+    }
+    else if (status === "return") {
+        const inspectionRequired = req.body.inspection; 
+        await calculateLateDays(rentToUpdate)
+
+        if (inspectionRequired) {
+            await sendEmail("s12112422@stu.najah.edu", "Inspection Scheduled", "An expert will inspect your returned item.");
+            return res.status(200).json({ message: "Inspection scheduled. Await expert feedback." });
+        } else {
+           // const refund = calculateRefund(rentToUpdate.securityDeposit);
+            await sendEmail("s12112422@stu.najah.edu", "Item Returned Successfully", `Refund processed: `);
+            return res.status(200).json({ message: "Item returned and refund processed." });
+        }
+    }
+    else {
+        return res.status(400).json({errors: "there is no status  " + status+" your status should be (accept / reject / return)"});
+    }
+
+    return res.status(200).json(rents);
+
+
 
 });
 
