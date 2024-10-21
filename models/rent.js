@@ -1,4 +1,4 @@
-const { DataTypes } = require("sequelize");
+const {DataTypes, QueryTypes} = require("sequelize");
 const { sequelize } = require("./config.js");
 
 const Rental = sequelize.define("rent", {
@@ -56,17 +56,213 @@ const Rental = sequelize.define("rent", {
   },
   Status: {
     type: DataTypes.STRING,//good (owner) inspect(expert --> damaged good) owner(rented) returned
-  },
-  RPrice: {
-    type: DataTypes.DOUBLE,
-  },
-  totalPrice: {
-    type: DataTypes.DOUBLE,
-  },
- 
+  }
 
 });
 
 
+const findRentalById=async(id)=>{
+  const sqlQuery = `SELECT * from rents where rentalId =:id `;
 
-module.exports = Rental;
+  const result = await sequelize.query(sqlQuery, {
+      replacements: { id },
+      type: QueryTypes.SELECT,
+  });
+  console.log("Query result:", result);
+
+  return result[0];
+}
+
+const findAllRentalItemIn=async(itemId, currentEndDate, newEndDate)=>{
+
+  const sqlQuery = `SELECT * FROM rents
+   WHERE itemId = :itemId  AND status = 'accepted'
+   AND ((startDate < :newEndDate AND endDate > :currentEndDate)
+   OR (startDate >= :currentEndDate AND endDate <= :newEndDate)); `;
+
+  const result = await sequelize.query(sqlQuery, {
+      replacements: { itemId,newEndDate,currentEndDate },
+      type: QueryTypes.SELECT,
+  });
+  console.log("Query result:", result);
+
+  return result;
+}
+
+const updateEndDate=async(rentalId,newEndDate)=>{
+    const sqlQuery = `UPDATE rents SET endDate = :newEndDate, WHERE rentalId= :rentalId; `;
+
+    const result = await sequelize.query(sqlQuery, {
+    replacements: { newEndDate,rentalId },
+    type: QueryTypes.UPDATE,
+    });
+    console.log("Query result:", result);
+
+    return result;
+}
+
+const rentAdd = async (customerId,itemId,expertId,startDate,endDate) => {
+
+  const result=await sequelize.query(
+    `INSERT INTO Rents (customerId, itemtId, expertId, startDate, endDate, Status)
+     VALUES (:customerId, :itemId, :expertId, :startDate, :endDate, 'pending')`,
+    { replacements: {customerId,itemId,expertId,startDate,endDate,},
+    type: sequelize.QueryTypes.INSERT,});
+
+  console.log("Rental successfully added");
+  return result;
+};
+
+
+
+const fetchConflictingRentals = async (itemId, startDate, endDate) => {
+  const sqlQuery = `
+      SELECT startDate, endDate
+      FROM Rents
+      WHERE itemtId = :itemId
+      AND Status != 'rejected'
+      AND (
+          (startDate < :endDate AND endDate > :startDate)
+      )
+      ORDER BY startDate;
+  `;
+
+  return await sequelize.query(sqlQuery, {
+      replacements: { itemId, startDate, endDate },
+      type: sequelize.QueryTypes.SELECT,
+  });
+};
+
+const hasConflictingRentals = (conflictingRentals) => {
+  return conflictingRentals.length > 0;
+};
+
+const calculateAvailablePeriods = (conflictingRentals, startDate, endDate) => {
+  const availablePeriods = [];
+  let previousEnd = new Date(startDate); 
+
+  for (const rental of conflictingRentals) {
+      const rentalStart = new Date(rental.startDate);
+      const rentalEnd = new Date(rental.endDate);
+
+      if (previousEnd < rentalStart) {
+          availablePeriods.push({
+              availableStart: previousEnd,
+              availableEnd: rentalStart,
+          });
+      }
+      previousEnd = rentalEnd > previousEnd ? rentalEnd : previousEnd;
+  }
+
+  if (previousEnd < new Date(endDate)) {
+      availablePeriods.push({
+          availableStart: previousEnd,
+          availableEnd: new Date(endDate),
+      });
+  }
+
+  return {availablePeriods,previousEnd};
+};
+
+const checkAvailableRent = async (itemId, startDate, endDate) => {
+  const conflictingRentals = await fetchConflictingRentals(itemId, startDate, endDate);
+
+  if (!hasConflictingRentals(conflictingRentals)) {
+      return { available: true }; 
+  }
+
+  const { availablePeriods, previousEnd } = calculateAvailablePeriods(conflictingRentals, startDate, endDate);
+
+  if (availablePeriods.length === 0) {
+      return {
+          available: false,
+          availablePeriods: [],
+          futureRentals: "You can rent the item after the last conflicting rental, starting from " + previousEnd.toISOString(),
+      };
+  }
+
+  return {
+      available: false,
+      availablePeriods,
+      futureRentals: "You can rent the item after the last conflicting rental, starting from " + previousEnd.toISOString(),
+  };
+};
+
+
+const rentDelete=async(rentId)=>{
+  const sqlQuery = `DELETE FROM rents WHERE rentalId=:rentId`;
+
+  const results = await sequelize.query(sqlQuery, {
+      replacements: {rentId},
+      type: QueryTypes.DELETE
+  });
+
+  return results;
+
+}
+
+const rentList = async (userId, role) => {
+  let query;
+
+  if (role === 'u') {
+      query = `SELECT * FROM Rents WHERE customerId = :userId ORDER BY startDate DESC`
+  } else if (role === 'o') {
+      query = `SELECT R.* FROM Rents AS R JOIN Items AS I ON R.itemtId = I.itemId 
+       WHERE I.ownerId = :userId ORDER BY R.startDate DESC;`
+  } else if (role === 'e') {
+      query = `SELECT * FROM Rents WHERE expertId = :userId ORDER BY startDate DESC`
+  }
+
+  return await sequelize.query(query, {
+      replacements: { userId },
+      type: sequelize.QueryTypes.SELECT,
+  });
+};
+
+const statusRentList=async(ownerId,status)=>{
+
+    query = `SELECT R.* FROM Rents AS R 
+    JOIN Items AS I ON R.itemtId = I.itemId 
+    WHERE I.ownerId = :ownerId AND R.Status = :status 
+    ORDER BY R.startDate DESC;`
+
+return await sequelize.query(query, {
+    replacements: { ownerId,status },
+    type: sequelize.QueryTypes.SELECT,
+});
+
+}
+
+const updateRentStatus=async(rentalId,status)=>{
+
+  const sqlQuery = `
+  UPDATE rents 
+  SET Status =:status
+  WHERE rentalId = :rentalId
+`;
+
+await sequelize.query(sqlQuery, {
+  replacements: { status,rentalId },
+  type: QueryTypes.UPDATE
+});
+
+}
+
+const updateLateDay=async(rentalId,lateDays)=>{
+  const sqlQuery = `
+  UPDATE rents 
+  SET lateDays =:lateDays
+  WHERE rentalId = :rentalId
+`;
+
+await sequelize.query(sqlQuery, {
+  replacements: { lateDays,rentalId },
+  type: QueryTypes.UPDATE
+});
+}
+
+
+
+module.exports = {Rental,findRentalById,findAllRentalItemIn,updateEndDate,rentAdd,checkAvailableRent,rentDelete,rentList,
+  statusRentList,updateRentStatus,updateLateDay
+};

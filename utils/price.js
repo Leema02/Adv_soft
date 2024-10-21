@@ -1,10 +1,15 @@
 const pricing = require('../models/pricing');
 const event = require('../models/event');
+const Item = require('../models/item');
+
 
 
 const priceCalculate = async (itemId, startDate, endDate) => {
-    const item = await item.findItemById(itemId);
+    const item = await Item.findItemById(itemId);
     const priceModel = await pricing.findPriceModelById(item.priceModelId);
+    if (!priceModel) {
+        throw new Error(`Price model with ID ${item.priceModelId} not found`);
+    }
     const currentEvents = await event.getEventsByCatId(item.catId);
 
     const millisecondsInDay = 1000 * 60 * 60 * 24;
@@ -37,4 +42,4 @@ const priceCalculate = async (itemId, startDate, endDate) => {
     return totalPrice;
 };
 
-module.exports = {priceCalculate};
+module.exports = priceCalculate;

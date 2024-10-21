@@ -7,7 +7,7 @@ const validateRole = require('../middleware/validateRole');
 const validateCat = require('../middleware/validateCat');
 
 
-router.post('/add',
+router.post('/',
     validateLogging.isLoggedIn,
     validateItem.validateItems(),
     validateItem.validateRequest,
@@ -16,7 +16,7 @@ router.post('/add',
 
 router.put('/:id',
     validateLogging.isLoggedIn,
-    validateRole('o'),
+    validateRole(['o']),
     itemController.itemUpdate);
 
 router.get('/NearMe',

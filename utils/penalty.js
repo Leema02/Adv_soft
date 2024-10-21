@@ -2,14 +2,15 @@ const pricing = require('../models/pricing');
 const item = require('../models/item');
 
 
-const calculatePenalties = (rental) => {
+const calculatePenalties =async (rental) => {
     let totalPenalties = 0;
+    const rentedItem = await item.findItemById(rental.itemId);
 
     const lateDays = rental.lateDays
     totalPenalties += lateDays * priceModel.dailyLateFee; 
 
     if (rental.Status=='damaged') {
-        if(rental.damageFee > rental.SecurityDeposit){
+        if(rental.damageFee > rentedItem.SecurityDeposit){
             totalPenalties += rental.damageFee-rentedItem.SecurityDeposit; 
         }
     }
