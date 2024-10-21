@@ -73,24 +73,27 @@ const findRentalById=async(id)=>{
   return result[0];
 }
 
-const findAllRentalItemIn=async(itemId, currentEndDate, newEndDate)=>{
-
+const findAllRentalItemIn = async (itemId, currentEndDate, newEndDate) => {
   const sqlQuery = `SELECT * FROM rents
-   WHERE itemId = :itemId  AND status = 'accepted'
-   AND ((startDate < :newEndDate AND endDate > :currentEndDate)
-   OR (startDate >= :currentEndDate AND endDate <= :newEndDate)); `;
+      WHERE itemtId = :itemId AND status != 'reject'
+      AND (
+          (startDate < :newEndDate AND endDate > :currentEndDate) OR
+          (startDate >= :currentEndDate AND startDate < :newEndDate) OR
+          (endDate > :currentEndDate AND endDate <= :newEndDate)
+      );`;
 
   const result = await sequelize.query(sqlQuery, {
-      replacements: { itemId,newEndDate,currentEndDate },
+      replacements: { itemId, newEndDate, currentEndDate },
       type: QueryTypes.SELECT,
   });
   console.log("Query result:", result);
 
-  return result;
-}
+  return result; 
+};
+
 
 const updateEndDate=async(rentalId,newEndDate)=>{
-    const sqlQuery = `UPDATE rents SET endDate = :newEndDate, WHERE rentalId= :rentalId; `;
+  const sqlQuery = `UPDATE rents SET endDate = :newEndDate WHERE rentalId = :rentalId`; 
 
     const result = await sequelize.query(sqlQuery, {
     replacements: { newEndDate,rentalId },
