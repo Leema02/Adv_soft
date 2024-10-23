@@ -23,10 +23,6 @@ router.get('/NearMe',
     validateLogging.isLoggedIn,
     itemController.itemNearME);
 
-    
-
-
-
 
 router.delete('/delete/:id', validateLogging.isLoggedIn, itemController.itemDelete);
 
