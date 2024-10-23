@@ -151,6 +151,55 @@ const itemObj = (req, res, next) => {
 }
 
 
+const filterItemsByAvailability = async (req, res) => {
+    const catId = req.params.catID;
+
+    let availability = null;
+    try {
+        availability = JSON.parse(req.params.availability);  // Convert "true"/"false" strings to boolean
+    } catch (error) {
+        availability = null;  
+    }
+
+    if (typeof availability !== 'boolean') {
+        return res.status(400).json({ error: "Availability must be 'true' or 'false'." });
+    }
+
+    try {
+        const result = await item.getItemsByCategoryAndAvailability(catId, availability);
+
+        if (result.length === 0) {
+            return res.status(204).json({ message: "No available items found in this category" });
+        }
+
+        res.status(200).json(result);
+    } catch (error) {
+        console.error("Error while retrieving available items:", error);  // Log the error for debugging
+        res.status(500).json({ error: "An error occurred while retrieving available items" });
+    }
+};
+
+const listItemsByLoyalty = async (req, res) => {
+    const catId = req.params.catID;
+  
+    try {
+      const items = await getItemsByCategoryAndLoyalty(catId);
+  
+      if (items.length === 0) {
+        return res.status(204).json({ message: "No items found in this category" });
+      }
+  
+      const sortedItems = items.sort((a, b) => a.loyaltyGrade.localeCompare(b.loyaltyGrade));
+  
+      res.status(200).json(sortedItems);
+    } catch (error) {
+      console.error("Error in listItemsByLoyalty:", error);
+      res.status(500).json({ error: 'An error occurred while retrieving items.' });
+    }
+  };
+
 module.exports = {itemAdd, itemObj, itemDelete, filterByMinMax, itemUpdate,
-    itemNearME, getItemByIds, searchItemByName};
+    itemNearME, getItemByIds, searchItemByName, filterItemsByAvailability,
+    listItemsByLoyalty
+};
 

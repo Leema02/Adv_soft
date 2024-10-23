@@ -12,19 +12,19 @@ router.post('/',
     validateLogging.isLoggedIn,
     validateCat.validateCat(),
     validateCat.validateRequest,
-    validateRole('a'),
+    validateRole(['a']),
     categoryController.categoryAdd);
 
 router.put('/:id',
     validateLogging.isLoggedIn,
     validateCat.validateCat(),
     validateCat.validateRequest,
-    validateRole('a'),
+    validateRole(['a']),
     categoryController.categoryUpdate);
 
 router.delete('/:id',
     validateLogging.isLoggedIn,
-    validateRole('a'),
+    validateRole(['a']),
     categoryController.categoryDelete);
 
 router.get('/',categoryController.categoryList);

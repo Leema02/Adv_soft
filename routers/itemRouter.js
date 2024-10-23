@@ -4,10 +4,10 @@ const itemController = require('../controllers/itemController');
 const validateLogging = require('../middleware/validateLogging');
 const validateItem = require('../middleware/validateItem');
 const validateRole = require('../middleware/validateRole');
+const validateCat = require('../middleware/validateCat');
 
 
-
-router.post('/add',
+router.post('/',
     validateLogging.isLoggedIn,
     validateItem.validateItems(),
     validateItem.validateRequest,
@@ -16,7 +16,7 @@ router.post('/add',
 
 router.put('/:id',
     validateLogging.isLoggedIn,
-    validateRole('o'),
+    validateRole(['o']),
     itemController.itemUpdate);
 
 router.get('/NearMe',
@@ -34,6 +34,7 @@ router.get('/filterRange/:way/:min/:max',
 router.get('/:catId/list/search',itemController.searchItemByName);
 router.get('/:catId/list/:idItem',itemController.getItemByIds);
 
-
+router.get('/item/:catID/list/ava/:availability', validateItem.identifyAvailabilityAndValidate, itemController.filterItemsByAvailability);
+router.get('/item/:catID/list', validateCat.validateCategory, itemController.listItemsByLoyalty);
 
 module.exports = router;

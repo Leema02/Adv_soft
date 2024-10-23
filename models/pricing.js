@@ -58,7 +58,7 @@ const insertPricing = async (data) => {
 
 };
 
-const findPriceModelById=catchAsync(async (id) => {
+const findPriceModelById=async (id) => {
     const sqlQuery = `SELECT * from PriceModels where priceModelId =:id `;
 
     const result = await sequelize.query(sqlQuery, {
@@ -69,7 +69,7 @@ const findPriceModelById=catchAsync(async (id) => {
     
 
     return result[0];
-});
+};
 
 
 const updatePriceModel = catchAsync(async (id, updateData) => {
