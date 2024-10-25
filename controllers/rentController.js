@@ -1,5 +1,9 @@
 const Rent = require('../models/rent');
 const Item = require('../models/item');
+const User = require('../models/user');
+const Income = require('../models/income');
+
+
 const Expert = require('../models/expert');
 const  sendEmail  = require('../utils/emailService');
 const  priceCalculate  = require('../utils/price');
@@ -60,18 +64,6 @@ const rentDelete = catchAsync(async (req, res) => {
 });
 
 const rentList = catchAsync(async (req, res) => {
-    // const receiver = 's12112422@stu.najah.edu';
-    // const subject = 'Welcome to our service';
-    // const message = 'Welcome! We are glad to have you.';
-
-    // try {
-    //     // This should call sendEmail
-    //     await sendEmail( receiver, subject, message);
-    //     console.log("Email send function called."); // This will confirm the call
-    // } catch (error) {
-    //     console.error(`Error sending email: ${error.message}`);
-    //     return res.status(500).json({ error: "Failed to send email." });
-    // }
 
      const id=res.locals.user.UID
      const role=res.locals.user.role
@@ -92,56 +84,82 @@ const statusRentList = catchAsync(async (req, res) => {
     
 });
 
-const updateRentStatus= catchAsync(async (req, res) => {
-
-    const ownerId=res.locals.user.UID
+const updateRentStatus = catchAsync(async (req, res) => {
+    const ownerId = res.locals.user.UID;
+    const rentalId = Number(req.params.rentalId);
     const status = req.params.status;
-    const rentalId = req.params.rentalId;
 
     const rentToUpdate = await Rent.findRentalById(rentalId);
-    if (!rentToUpdate)
-        return res.status(400).json({errors: "there is no rent with id " + rentalId});
-    
+    if (!rentToUpdate) {
+        return res.status(400).json({ errors: `There is no rent with ID ${rentalId}` });
+    }
+
     const itemRent = await Item.findItemById(rentToUpdate.itemtId);
-    if (itemRent.ownerId!=ownerId) {
-        return res.status(400).json({errors: "You do not have permission to update this rent."});
-     }
-    const rents=await Rent.updateRentStatus(rentalId,status);
-
-
-    if(status=="accept")
-    {
-        const price=await priceCalculate(rentToUpdate.itemtId,rentToUpdate.startDate,rentToUpdate.endDate)
-        await sendEmail("s12112422@stu.najah.edu","Update rent Status",`your rent with id  ${rentalId} to item ${rentToUpdate.itemtId} status update to ${status} your total price is ${price} for period from ${rentToUpdate.startDate} to ${rentToUpdate.endDate}`)
-
-    }
-    else if(status=="reject")
-    {
-        await sendEmail("s12112422@stu.najah.edu","Update rent Status",`Sorry!!,your rent with id  ${rentalId} to item ${rentToUpdate.itemtId} status update to ${status}`)
-    
-    }
-    else if (status === "return") {
-        const inspectionRequired = req.body.inspection; 
-        await calculateLateDays(rentToUpdate)
-
-        if (inspectionRequired) {
-            await sendEmail("s12112422@stu.najah.edu", "Inspection Scheduled", "An expert will inspect your returned item.");
-            return res.status(200).json({ message: "Inspection scheduled. Await expert feedback." });
-        } else {
-           // const refund = calculateRefund(rentToUpdate.securityDeposit);
-            await sendEmail("s12112422@stu.najah.edu", "Item Returned Successfully", `Refund processed: `);
-            return res.status(200).json({ message: "Item returned and refund processed." });
-        }
-    }
-    else {
-        return res.status(400).json({errors: "there is no status  " + status+" your status should be (accept / reject / return)"});
+    if (itemRent.ownerId !== ownerId) {
+        return res.status(400).json({ errors: "You do not have permission to update this rent." });
     }
 
-    return res.status(200).json(rents);
+    await Rent.updateRentStatus(rentalId, status);
+    const { email } = await User.getEmailById(rentToUpdate.customerId);
 
-
-
+    switch (status) {
+        case "accept":
+            return await handleAcceptStatus(rentToUpdate, itemRent, email, rentalId, res);
+        case "reject":
+            return await handleRejectStatus(rentalId, itemRent, email, res);
+        case "return":
+            return await handleReturnStatus(rentToUpdate, email, req.body.inspection, res);
+        default:
+            return res.status(400).json({ errors: `Invalid status "${status}". Valid statuses are: accept, reject, return.` });
+    }
 });
+
+const handleAcceptStatus = async (rentToUpdate, itemRent, email, rentalId, res) => {
+    const price = await priceCalculate(rentToUpdate.itemtId, rentToUpdate.startDate, rentToUpdate.endDate);
+    await createIncome(price, itemRent.ownerId, rentalId);
+    await User.incLoyalty(rentToUpdate.customerId);
+    await User.incLoyalty(itemRent.ownerId);
+
+    await sendEmail(
+        email,
+        "Update Rent Status",
+        `Your rent with ID ${rentalId} for item ${rentToUpdate.itemtId} status has been updated to accept. Your total price is ${price} for the period from ${rentToUpdate.startDate} to ${rentToUpdate.endDate}.`
+    );
+
+    return res.status(200).json({ success: "Status updated to accept and email sent successfully." });
+};
+
+const handleRejectStatus = async (rentalId, itemRent, email, res) => {
+    await sendEmail(
+        email,
+        "Update Rent Status",
+        `Sorry! Your rent with ID ${rentalId} for item ${itemRent.itemId} status has been updated to reject.`
+    );
+
+    return res.status(200).json({ success: "Status updated to reject and email sent successfully." });
+};
+
+const handleReturnStatus = async (rentToUpdate, email, inspectionRequired, res) => {
+    await calculateLateDays(rentToUpdate);
+
+    if (inspectionRequired) {
+        await sendEmail(email, "Inspection Scheduled", "An expert will inspect your returned item.");
+        return res.status(200).json({ message: "Inspection scheduled. Await expert feedback." });
+    } else {
+        // const refund = calculateRefund(rentToUpdate.securityDeposit);
+        await sendEmail(email, "Item Returned Successfully", `Refund processed.`);
+        return res.status(200).json({ message: "Item returned and refund processed." });
+    }
+};
+
+
+const createIncome=async(totalPrice,ownerId,rentalId)=>{
+
+    const { expertShare, adminShare, ownerShare } =await User.getIncomeDistribution(ownerId);
+
+    await Income.addIncome( rentalId,  totalPrice * expertShare,totalPrice * adminShare,totalPrice * ownerShare,);
+
+}
 
 
 module.exports = {rentList,rentAdd,rentDelete,rentList,statusRentList,updateRentStatus};

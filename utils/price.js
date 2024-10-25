@@ -1,6 +1,10 @@
 const pricing = require('../models/pricing');
 const event = require('../models/event');
 const Item = require('../models/item');
+const User = require('../models/user');
+const Income = require('../models/income');
+
+
 
 
 
@@ -38,7 +42,7 @@ const priceCalculate = async (itemId, startDate, endDate) => {
     } else if (priceModel.discountRate) {
         totalPrice -= totalPrice * (priceModel.discountRate / 100); 
     }
-
+    
     return totalPrice;
 };
 
