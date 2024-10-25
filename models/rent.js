@@ -73,24 +73,27 @@ const findRentalById=async(id)=>{
   return result[0];
 }
 
-const findAllRentalItemIn=async(itemId, currentEndDate, newEndDate)=>{
-
+const findAllRentalItemIn = async (itemId, currentEndDate, newEndDate) => {
   const sqlQuery = `SELECT * FROM rents
-   WHERE itemId = :itemId  AND status = 'accepted'
-   AND ((startDate < :newEndDate AND endDate > :currentEndDate)
-   OR (startDate >= :currentEndDate AND endDate <= :newEndDate)); `;
+      WHERE itemtId = :itemId AND status != 'reject'
+      AND (
+          (startDate < :newEndDate AND endDate > :currentEndDate) OR
+          (startDate >= :currentEndDate AND startDate < :newEndDate) OR
+          (endDate > :currentEndDate AND endDate <= :newEndDate)
+      );`;
 
   const result = await sequelize.query(sqlQuery, {
-      replacements: { itemId,newEndDate,currentEndDate },
+      replacements: { itemId, newEndDate, currentEndDate },
       type: QueryTypes.SELECT,
   });
   console.log("Query result:", result);
 
-  return result;
-}
+  return result; 
+};
+
 
 const updateEndDate=async(rentalId,newEndDate)=>{
-    const sqlQuery = `UPDATE rents SET endDate = :newEndDate, WHERE rentalId= :rentalId; `;
+  const sqlQuery = `UPDATE rents SET endDate = :newEndDate WHERE rentalId = :rentalId`; 
 
     const result = await sequelize.query(sqlQuery, {
     replacements: { newEndDate,rentalId },
@@ -261,8 +264,37 @@ await sequelize.query(sqlQuery, {
 });
 }
 
+const getRentRecordsForMonth = async (startOfMonth, endOfMonth, id, userRole) => {
+  let sqlQuery = `
+      SELECT rents.*
+      FROM rents
+      INNER JOIN incomes ON rents.rentalId = incomes.rentalId
+      INNER JOIN items ON rents.itemtId = items.itemId
+      WHERE incomes.createdAt BETWEEN :startOfMonth AND :endOfMonth
+  `;
+
+  const whereConditions = [];
+
+  if (userRole === 'e') {
+      whereConditions.push('rents.expertId = :id');
+  } else if (userRole === 'o') {
+      whereConditions.push('items.ownerId = :id'); // Check against ownerId in items
+  }
+
+  if (whereConditions.length > 0) {
+      sqlQuery += ' AND ' + whereConditions.join(' AND ');
+  }
+
+  const result = await sequelize.query(sqlQuery, {
+      replacements: { startOfMonth, endOfMonth, id },
+      type: QueryTypes.SELECT,
+  });
+
+  return result; 
+};
+
 
 
 module.exports = {Rental,findRentalById,findAllRentalItemIn,updateEndDate,rentAdd,checkAvailableRent,rentDelete,rentList,
-  statusRentList,updateRentStatus,updateLateDay
+  statusRentList,updateRentStatus,updateLateDay,getRentRecordsForMonth
 };
