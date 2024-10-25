@@ -42,6 +42,7 @@ const user = sequelize.define("User", {
   },
   loyalty: {
     type: DataTypes.DOUBLE, // .1  ==> 1 silver 2 gold  
+    defaultValue: 0.0,
   },
   role: {
     type: DataTypes.ENUM("u", "a", "e","o"),
@@ -74,5 +75,22 @@ const findUserById=async(id)=>{
   return result[0];
 }
 
+const incLoyalty = async (id) => {
+  const sqlQuery = `
+    UPDATE users 
+    SET loyalty = loyalty + 0.1
+    WHERE UID = :id
+  `;
 
-module.exports ={user,OwnerNearME,findUserById};
+  try {
+    await sequelize.query(sqlQuery, {
+      replacements: { id },
+      type: QueryTypes.UPDATE
+    });
+  } catch (error) {
+    console.error('Error updating loyalty:', error);
+    throw error; // Rethrow the error if needed
+  }
+};
+
+module.exports ={user,OwnerNearME,findUserById,incLoyalty};

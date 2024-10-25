@@ -1,5 +1,7 @@
 const Rent = require('../models/rent');
 const Item = require('../models/item');
+const User = require('../models/user');
+
 const Expert = require('../models/expert');
 const  sendEmail  = require('../utils/emailService');
 const  priceCalculate  = require('../utils/price');
@@ -113,7 +115,8 @@ const updateRentStatus= catchAsync(async (req, res) => {
     {
         const price=await priceCalculate(rentToUpdate.itemtId,rentToUpdate.startDate,rentToUpdate.endDate)
         await sendEmail("s12112422@stu.najah.edu","Update rent Status",`your rent with id  ${rentalId} to item ${rentToUpdate.itemtId} status update to ${status} your total price is ${price} for period from ${rentToUpdate.startDate} to ${rentToUpdate.endDate}`)
-
+        await User.incLoyalty(rentToUpdate.customerId)
+        
     }
     else if(status=="reject")
     {
