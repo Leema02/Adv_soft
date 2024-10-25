@@ -93,4 +93,35 @@ const incLoyalty = async (id) => {
   }
 };
 
-module.exports ={user,OwnerNearME,findUserById,incLoyalty};
+
+
+const ownerLoyalty=async(id)=>{
+  const sqlQuery = `SELECT loyalty FROM Users WHERE UID = :id`;
+
+  
+   const result= await sequelize.query(sqlQuery, {
+      replacements: { id },
+      type: QueryTypes.SELECT
+    });
+return result[0]
+}
+
+const getIncomeDistribution =async (id) => {
+  const loyalty=await ownerLoyalty(id)
+  let expertShare = 0.10; 
+  let adminShare = 0.15; 
+  let ownerShare = 0.75; 
+
+  if (loyalty >= 2) { 
+      expertShare = 0.5; 
+      adminShare = 0.10;
+      ownerShare = 0.85; 
+  } else if (loyalty >= 4) { 
+      expertShare = 0.90;
+      adminShare = 0.07;
+      ownerShare = 0.03;
+  }
+
+  return { expertShare, adminShare, ownerShare };
+};
+module.exports ={user,OwnerNearME,findUserById,incLoyalty,ownerLoyalty,getIncomeDistribution};

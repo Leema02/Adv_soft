@@ -1,6 +1,8 @@
 const Rent = require('../models/rent');
 const Item = require('../models/item');
 const User = require('../models/user');
+const Income = require('../models/income');
+
 
 const Expert = require('../models/expert');
 const  sendEmail  = require('../utils/emailService');
@@ -98,7 +100,7 @@ const updateRentStatus= catchAsync(async (req, res) => {
 
     const ownerId=res.locals.user.UID
     const status = req.params.status;
-    const rentalId = req.params.rentalId;
+    const rentalId = Number(req.params.rentalId);
 
     const rentToUpdate = await Rent.findRentalById(rentalId);
     if (!rentToUpdate)
@@ -114,8 +116,12 @@ const updateRentStatus= catchAsync(async (req, res) => {
     if(status=="accept")
     {
         const price=await priceCalculate(rentToUpdate.itemtId,rentToUpdate.startDate,rentToUpdate.endDate)
-        await sendEmail("s12112422@stu.najah.edu","Update rent Status",`your rent with id  ${rentalId} to item ${rentToUpdate.itemtId} status update to ${status} your total price is ${price} for period from ${rentToUpdate.startDate} to ${rentToUpdate.endDate}`)
+        await createIncome(price,itemRent.ownerId,rentalId)
         await User.incLoyalty(rentToUpdate.customerId)
+        await User.incLoyalty(itemRent.ownerId)
+
+
+        await sendEmail("s12112422@stu.najah.edu","Update rent Status",`your rent with id  ${rentalId} to item ${rentToUpdate.itemtId} status update to ${status} your total price is ${price} for period from ${rentToUpdate.startDate} to ${rentToUpdate.endDate}`)
         
     }
     else if(status=="reject")
@@ -145,6 +151,14 @@ const updateRentStatus= catchAsync(async (req, res) => {
 
 
 });
+
+const createIncome=async(totalPrice,ownerId,rentalId)=>{
+
+    const { expertShare, adminShare, ownerShare } =await User.getIncomeDistribution(ownerId);
+
+    await Income.addIncome( rentalId,  totalPrice * expertShare,totalPrice * adminShare,totalPrice * ownerShare,);
+
+}
 
 
 module.exports = {rentList,rentAdd,rentDelete,rentList,statusRentList,updateRentStatus};

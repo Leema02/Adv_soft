@@ -1,7 +1,12 @@
 const Rental = require('../models/rent');
+const Item = require('../models/item');
+
 const  sendEmail  = require('../utils/emailService');
 const catchAsync = require('../utils/catchAsyn');
 const priceCalculate = require('../utils/price');
+const Income = require('../models/income');
+const User = require('../models/user');
+
 
 
 const extendRental =catchAsync( async (req, res) => {
@@ -40,11 +45,16 @@ const respondToExtensionRequest = async (req, res) => {
     if (!rental) {
         return res.status(404).json({ message: 'Rental not found' });
     }
+    const item = await Item.findItemById(rental.itemtId)
 
     if (response === 'accept') {
         const prevEndDate=rental.endDate
         const totalPriceBeforeExtend = await priceCalculate(rental.itemtId,rental.startDate, prevEndDate);
         const totalPriceAfterExtend =await priceCalculate(rental.itemtId,rental.startDate, newEndDate);
+        const { expertShare, adminShare, ownerShare } =await User.getIncomeDistribution(item.ownerId);
+
+        await Income.addIncome( rental.rentalId,  totalPriceAfterExtend * expertShare,totalPriceAfterExtend * adminShare,totalPriceAfterExtend * ownerShare,);
+        
         console.log(newEndDate,rental.endDate);
         
         const toPay =totalPriceAfterExtend-totalPriceBeforeExtend;
