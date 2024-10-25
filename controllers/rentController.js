@@ -117,6 +117,7 @@ const updateRentStatus= catchAsync(async (req, res) => {
     {
         const price=await priceCalculate(rentToUpdate.itemtId,rentToUpdate.startDate,rentToUpdate.endDate)
         await createIncome(price,itemRent.ownerId,rentalId)
+        console.log(price)
         await User.incLoyalty(rentToUpdate.customerId)
         await User.incLoyalty(itemRent.ownerId)
 

@@ -4,6 +4,7 @@ const itemRouter = require('./routers/itemRouter');
 const catRouter = require('./routers/categoryRouter');
 const eventRouter = require('./routers/eventRouter');
 const rentRouter = require('./routers/rentRouter');
+const incomeRouter = require('./routers/incomeRouter');
 
 
 
@@ -20,6 +21,8 @@ app.use('/item',itemRouter);
 app.use('/cat',catRouter);
 app.use('/event',eventRouter);
 app.use('/rent',rentRouter);
+app.use('/income/report',incomeRouter);
+
 
 
 

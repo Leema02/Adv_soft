@@ -264,8 +264,37 @@ await sequelize.query(sqlQuery, {
 });
 }
 
+const getRentRecordsForMonth = async (startOfMonth, endOfMonth, id, userRole) => {
+  let sqlQuery = `
+      SELECT rents.*
+      FROM rents
+      INNER JOIN incomes ON rents.rentalId = incomes.rentalId
+      INNER JOIN items ON rents.itemtId = items.itemId
+      WHERE incomes.createdAt BETWEEN :startOfMonth AND :endOfMonth
+  `;
+
+  const whereConditions = [];
+
+  if (userRole === 'e') {
+      whereConditions.push('rents.expertId = :id');
+  } else if (userRole === 'o') {
+      whereConditions.push('items.ownerId = :id'); // Check against ownerId in items
+  }
+
+  if (whereConditions.length > 0) {
+      sqlQuery += ' AND ' + whereConditions.join(' AND ');
+  }
+
+  const result = await sequelize.query(sqlQuery, {
+      replacements: { startOfMonth, endOfMonth, id },
+      type: QueryTypes.SELECT,
+  });
+
+  return result; 
+};
+
 
 
 module.exports = {Rental,findRentalById,findAllRentalItemIn,updateEndDate,rentAdd,checkAvailableRent,rentDelete,rentList,
-  statusRentList,updateRentStatus,updateLateDay
+  statusRentList,updateRentStatus,updateLateDay,getRentRecordsForMonth
 };
