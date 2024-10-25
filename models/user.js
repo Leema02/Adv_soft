@@ -124,4 +124,16 @@ const getIncomeDistribution =async (id) => {
 
   return { expertShare, adminShare, ownerShare };
 };
-module.exports ={user,OwnerNearME,findUserById,incLoyalty,ownerLoyalty,getIncomeDistribution};
+
+const getEmailById=async(id)=>{
+  const sqlQuery = `SELECT email FROM Users WHERE UID = :id`;
+
+  
+  const result= await sequelize.query(sqlQuery, {
+     replacements: { id },
+     type: QueryTypes.SELECT
+   });
+return result[0]
+}
+
+module.exports ={user,OwnerNearME,findUserById,incLoyalty,ownerLoyalty,getIncomeDistribution,getEmailById};
