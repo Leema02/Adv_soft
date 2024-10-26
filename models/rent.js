@@ -8,10 +8,10 @@ const Rental = sequelize.define("rent", {
     primaryKey: true,
   },
 
-  itemtId: {
+  itemId: {
     type: DataTypes.INTEGER,
     references: {
-      model: "Items",
+      model: "items",
       key: "itemId",
     },
    
@@ -22,7 +22,7 @@ const Rental = sequelize.define("rent", {
   customerId: {
     type: DataTypes.INTEGER,
     references: {
-      model: "Users",
+      model: "users",
       key: "UID",
     },
 

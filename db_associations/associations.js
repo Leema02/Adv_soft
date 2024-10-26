@@ -55,6 +55,6 @@ const income = require("../models/income.js");
 // Rent.hasOne(Delivery, { foreignKey: 'rentalId', onDelete: 'CASCADE' });
 
 
-sequelize.sync({ force: true }).then(() => {
-  console.log("Synced");
+sequelize.sync({ alter: true }).then(() => {
+  console.log("Database synchronized with changes.");
 });

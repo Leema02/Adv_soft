@@ -7,10 +7,10 @@ const review = sequelize.define("review", {
     autoIncrement: true,
     primaryKey: true,
   },
-  itemtId: {
+  itemId: {
     type: DataTypes.INTEGER,
     references: {
-      model: "Items",
+      model: "items",
       key: "itemId",
     },
     onDelete: "CASCADE",
@@ -19,7 +19,7 @@ const review = sequelize.define("review", {
   customerId: {
     type: DataTypes.INTEGER,
     references: {
-      model: "Users",
+      model: "users",
       key: "UID",
     },
     onDelete: "CASCADE",

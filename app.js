@@ -5,9 +5,7 @@ const catRouter = require('./routers/categoryRouter');
 const eventRouter = require('./routers/eventRouter');
 const rentRouter = require('./routers/rentRouter');
 const incomeRouter = require('./routers/incomeRouter');
-
-
-
+const expertRouter = require('./routers/expertRouter');
 
 const cookieParser = require('cookie-parser');
 
@@ -17,11 +15,12 @@ app.use(cookieParser());
 
 
 app.use('/', authRouter); // Use the auth router
-app.use('/item',itemRouter);
-app.use('/cat',catRouter);
-app.use('/event',eventRouter);
-app.use('/rent',rentRouter);
+app.use('/item', itemRouter);
+app.use('/category', catRouter);
+app.use('/event', eventRouter);
+app.use('/rent', rentRouter);
 app.use('/income/report',incomeRouter);
+app.use('/expert',expertRouter);
 
 
 

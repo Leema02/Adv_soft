@@ -14,6 +14,11 @@ router.post('/',
     itemController.itemObj,
     itemController.itemAdd);
 
+router.put('/image/:id',
+    validateLogging.isLoggedIn,
+    validateRole(['o']),
+    itemController.addImage);
+
 router.put('/:id',
     validateLogging.isLoggedIn,
     validateRole(['o']),
