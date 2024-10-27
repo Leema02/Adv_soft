@@ -40,12 +40,12 @@ const addInspection = async (rentalId, expertId, imagePath) => {
     const sqlQuery = `INSERT INTO inspections(expertId , rentalId,ImageAfter ) VALUES(:expertId,:rentalId,:imagePath);`;
 
     return await sequelize.query(sqlQuery, {
-        replacements:{
-            expertId:expertId,
-            rentalId:rentalId,
-            imagePath:imagePath
+        replacements: {
+            expertId: expertId,
+            rentalId: rentalId,
+            imagePath: imagePath
         },
-        type:QueryTypes.INSERT
+        type: QueryTypes.INSERT
     });
 };
 
@@ -54,10 +54,47 @@ const getInspections = async (expertId) => {
     const sqlQuery = `SELECT * FROM inspections WHERE expertId = :expertId;`;
 
     return await sequelize.query(sqlQuery, {
-        replacements:{
-            expertId:expertId,
+        replacements: {
+            expertId: expertId,
         },
-        type:QueryTypes.SELECT
+        type: QueryTypes.SELECT
     });
 };
-module.exports = {inspection, addInspection,getInspections};
+
+const editInspectionStatus = async (id, status) => {
+
+    const sqlQuery = `UPDATE inspections SET Status = :status WHERE InspectionId = :id`;
+    const statusBool = status === 'true';
+    return await sequelize.query(sqlQuery, {
+        replacements: {
+            status: statusBool,
+            id: id,
+        },
+        type: QueryTypes.UPDATE
+    });
+
+}
+
+const findInspectionById = async (id) => {
+    const sqlQuery = `SELECT * FROM inspections WHERE InspectionId = :id`;
+
+    const result = await sequelize.query(sqlQuery, {
+        replacements: { id },
+        type: QueryTypes.SELECT,
+    });
+
+    return result[0];
+
+}
+
+const findInspectionByRentId = async(id) => {
+    const sqlQuery = `SELECT * FROM inspections WHERE rentalId = :id`;
+
+    const result = await sequelize.query(sqlQuery, {
+        replacements: { id },
+        type: QueryTypes.SELECT,
+    });
+
+    return result[0];
+};
+module.exports = {inspection, addInspection, getInspections, editInspectionStatus ,findInspectionById,findInspectionByRentId};

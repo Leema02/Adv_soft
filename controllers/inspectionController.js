@@ -4,6 +4,10 @@ const User = require('../models/user');
 const Item = require('../models/item');
 const Expert = require('../models/expert');
 const catchAsync = require('../utils/catchAsyn');
+const sendEmail = require("../utils/emailService");
+const {findInspectionById} = require("../models/inspection");
+const {findRentalById} = require("../models/rent");
+const penalty = require('../utils/penalty');
 
 const openInspection = async (rentalId, ownerEmail, imagePath) => {
 
@@ -29,4 +33,31 @@ const listInspections = catchAsync(async (req, res) => {
 
     res.status(200).json({result : results});
 });
-module.exports = {openInspection, listInspections}
+
+const responseInspection = catchAsync(async(req , res) => {
+    const inspectionId = req.params.id;
+    const status = req.params.status;
+
+    await inspection.editInspectionStatus(inspectionId , status);
+
+    const insp2 = await inspection.findInspectionById(inspectionId);
+    const rent = await rental.findRentalById(insp2.rentalId);
+    const item = await Item.findItemById(rent.itemId);
+
+    const ownerEmail = await User.getEmailById(item.ownerId);
+    const customerEmail = await User.getEmailById(rent.customerId);
+
+    if(status === 'true'){
+        await sendEmail(ownerEmail.email, "Rent Refund", "An inspection was closed and your request is succesful");
+        await sendEmail(customerEmail.email, "Rent Refund", "An inspection was closed and you have to pay secuirity deposit");
+        await penalty.refundCash(rent);
+    }
+    else{
+        await sendEmail(ownerEmail.email, "Rent Refund", "An inspection was closed and your request is failed");
+        await sendEmail(customerEmail.email, "Rent Refund", "An inspection was closed and you do not have to pay secuirity deposit");
+        await penalty.refundCash(rent);
+    }
+    res.status(200).json({result : "inspection " + inspectionId + " have been edited"});
+});
+
+module.exports = {openInspection, listInspections,responseInspection}
