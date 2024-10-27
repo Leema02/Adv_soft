@@ -6,8 +6,10 @@ const eventRouter = require('./routers/eventRouter');
 const rentRouter = require('./routers/rentRouter');
 const incomeRouter = require('./routers/incomeRouter');
 const expertRouter = require('./routers/expertRouter');
+const inspectionRouter = require('./routers/InspectionRouter');
 
 const cookieParser = require('cookie-parser');
+const {inspection} = require("./models/inspection");
 
 const app = express();
 app.use(express.json()); // Middleware to parse JSON
@@ -21,8 +23,7 @@ app.use('/event', eventRouter);
 app.use('/rent', rentRouter);
 app.use('/income/report',incomeRouter);
 app.use('/expert',expertRouter);
-
-
+app.use('/inspection',inspectionRouter);
 
 
 

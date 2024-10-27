@@ -75,6 +75,17 @@ const findUserById = async (id) => {
     return result[0];
 }
 
+const findUserByEmail = async(email) => {
+    const sqlQuery = `SELECT * FROM Users WHERE Email = :email`;
+
+    const result = await sequelize.query(sqlQuery, {
+        replacements: {email: email},
+        type: QueryTypes.SELECT,
+    });
+    console.log("Query result:", result);
+
+    return result[0];
+};
 const incLoyalty = async (id) => {
     const sqlQuery = `
     UPDATE users 
@@ -135,4 +146,4 @@ const getEmailById = async (id) => {
     return result[0]
 }
 
-module.exports = {user, OwnerNearME, findUserById, incLoyalty, ownerLoyalty, getIncomeDistribution, getEmailById};
+module.exports = {user, OwnerNearME, findUserById,findUserByEmail, incLoyalty, ownerLoyalty, getIncomeDistribution, getEmailById};
