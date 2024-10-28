@@ -5,6 +5,7 @@ const category = require('../models/category');
 const pricing = require('../models/pricing');
 const catchAsync = require('../utils/catchAsyn');
 const AppError = require('../utils/AppError');
+const Review = require('../models/review');
 
 const itemAdd = async (req, res) => {
 
@@ -114,16 +115,16 @@ const itemDelete = async (req, res) => {
 
 };
 
-const addImage = catchAsync(async (req , res) => {
+const addImage = catchAsync(async (req, res) => {
 
     const result = item.findItemById(req.params.id);
     if (result.length === 0) {
         res.status(400).json({errors: "there is no item with id " + req.params.id});
         return;
     }
-   const rr = await item.editImage(req.params.id,req.body.path);
+    const rr = await item.editImage(req.params.id, req.body.path);
 
-   res.status(200).json({success : "Added Image to Item " + req.params.id });
+    res.status(200).json({success: "Added Image to Item " + req.params.id});
 });
 
 const filterByMinMax = async (req, res) => {
@@ -148,7 +149,7 @@ const getItemByIds = catchAsync(async (req, res) => {
 
 const searchItemByName = catchAsync(async (req, res) => {
 
-    const result = await item.getLikeItemName(req.params.catId,req.query.item);
+    const result = await item.getLikeItemName(req.params.catId, req.query.item);
     if (result.length === 0) {
         res.status(204).json({result: "no results"});
         return;
@@ -170,48 +171,56 @@ const filterItemsByAvailability = async (req, res) => {
     try {
         availability = JSON.parse(req.params.availability);  // Convert "true"/"false" strings to boolean
     } catch (error) {
-        availability = null;  
+        availability = null;
     }
 
     if (typeof availability !== 'boolean') {
-        return res.status(400).json({ error: "Availability must be 'true' or 'false'." });
+        return res.status(400).json({error: "Availability must be 'true' or 'false'."});
     }
 
     try {
         const result = await item.getItemsByCategoryAndAvailability(catId, availability);
 
         if (result.length === 0) {
-            return res.status(204).json({ message: "No available items found in this category" });
+            return res.status(204).json({message: "No available items found in this category"});
         }
 
         res.status(200).json(result);
     } catch (error) {
         console.error("Error while retrieving available items:", error);  // Log the error for debugging
-        res.status(500).json({ error: "An error occurred while retrieving available items" });
+        res.status(500).json({error: "An error occurred while retrieving available items"});
     }
 };
 
 const listItemsByLoyalty = async (req, res) => {
     const catId = req.params.catID;
-  
-    try {
-      const items = await getItemsByCategoryAndLoyalty(catId);
-  
-      if (items.length === 0) {
-        return res.status(204).json({ message: "No items found in this category" });
-      }
-  
-      const sortedItems = items.sort((a, b) => a.loyaltyGrade.localeCompare(b.loyaltyGrade));
-  
-      res.status(200).json(sortedItems);
-    } catch (error) {
-      console.error("Error in listItemsByLoyalty:", error);
-      res.status(500).json({ error: 'An error occurred while retrieving items.' });
-    }
-  };
 
-module.exports = {itemAdd, itemObj, itemDelete, filterByMinMax, itemUpdate,
+    try {
+        const items = await getItemsByCategoryAndLoyalty(catId);
+
+        if (items.length === 0) {
+            return res.status(204).json({message: "No items found in this category"});
+        }
+
+        const sortedItems = items.sort((a, b) => a.loyaltyGrade.localeCompare(b.loyaltyGrade));
+
+        res.status(200).json(sortedItems);
+    } catch (error) {
+        console.error("Error in listItemsByLoyalty:", error);
+        res.status(500).json({error: 'An error occurred while retrieving items.'});
+    }
+};
+
+const getRateOfItem = catchAsync(async (req, res) => {
+    const itemId = req.params.itemId;
+
+    const result = await Review.getRateItem(Number(itemId));
+
+    res.status(200).json({result : result.rate});
+});
+module.exports = {
+    itemAdd, itemObj, itemDelete, filterByMinMax, itemUpdate,
     itemNearME, getItemByIds, searchItemByName, filterItemsByAvailability,
-    listItemsByLoyalty,addImage
+    listItemsByLoyalty, addImage,getRateOfItem
 };
 
