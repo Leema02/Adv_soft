@@ -57,6 +57,9 @@ const responseInspection = catchAsync(async(req , res) => {
         await sendEmail(customerEmail.email, "Rent Refund", "An inspection was closed and you do not have to pay secuirity deposit");
         await penalty.refundCash(rent);
     }
+
+    // remove inspection with id ${inspectionId}
+    // await inspection.deleteInspectionById(inspectionId);
     res.status(200).json({result : "inspection " + inspectionId + " have been edited"});
 });
 

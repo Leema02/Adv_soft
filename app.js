@@ -7,6 +7,7 @@ const rentRouter = require('./routers/rentRouter');
 const incomeRouter = require('./routers/incomeRouter');
 const expertRouter = require('./routers/expertRouter');
 const inspectionRouter = require('./routers/InspectionRouter');
+const reviewRouter = require('./routers/reviewRouter');
 
 const cookieParser = require('cookie-parser');
 const {inspection} = require("./models/inspection");
@@ -24,7 +25,7 @@ app.use('/rent', rentRouter);
 app.use('/income/report',incomeRouter);
 app.use('/expert',expertRouter);
 app.use('/inspection',inspectionRouter);
-
+app.use('/review',reviewRouter);
 
 
 

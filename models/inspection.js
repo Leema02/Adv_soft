@@ -79,7 +79,7 @@ const findInspectionById = async (id) => {
     const sqlQuery = `SELECT * FROM inspections WHERE InspectionId = :id`;
 
     const result = await sequelize.query(sqlQuery, {
-        replacements: { id },
+        replacements: {id},
         type: QueryTypes.SELECT,
     });
 
@@ -87,14 +87,34 @@ const findInspectionById = async (id) => {
 
 }
 
-const findInspectionByRentId = async(id) => {
+const findInspectionByRentId = async (id) => {
     const sqlQuery = `SELECT * FROM inspections WHERE rentalId = :id`;
 
     const result = await sequelize.query(sqlQuery, {
-        replacements: { id },
+        replacements: {id},
         type: QueryTypes.SELECT,
     });
 
     return result[0];
 };
-module.exports = {inspection, addInspection, getInspections, editInspectionStatus ,findInspectionById,findInspectionByRentId};
+
+const deleteInspectionById = async (id) => {
+    const sqlQuery = `DELETE FROM inspections WHERE InspectionId=:id`;
+
+    return await sequelize.query(sqlQuery, {
+        replacements: {
+            id: id
+        },
+        type: QueryTypes.DELETE
+    });
+
+};
+module.exports = {
+    inspection,
+    addInspection,
+    getInspections,
+    editInspectionStatus,
+    findInspectionById,
+    findInspectionByRentId,
+    deleteInspectionById
+};

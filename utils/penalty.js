@@ -46,9 +46,9 @@ const refundCash = async (rental) => {
     if (refundableAmount < 0) {
         refundableAmount = 0;
     }
-
+    console.log(penalties);
     customer.cashBalance += refundableAmount;
-    // await customer.save();
+    await User.updateCash(customer.UID, customer.cashBalance);
 
     console.log(`Refunded $${refundableAmount} in cash to customer ${customer.UID}.`);
     console.log('cash balance : '+customer.cashBalance)
@@ -68,7 +68,7 @@ const chargeCustomerForPenalty = async (rental) => {
     if (penalties > 0) {
         if (customer.cashBalance >= penalties) {
             customer.cashBalance -= penalties;
-            await customer.save();
+            await User.updateCash(customer.UID, customer.cashBalance);
             console.log(`Charged customer ${customer.UID} a penalty of $${penalties}.`);
         } else {
             console.log(`Insufficient balance for customer ${customer.UID} to cover penalties. Current balance: $${customer.cashBalance}.`);

@@ -75,7 +75,7 @@ const findUserById = async (id) => {
     return result[0];
 }
 
-const findUserByEmail = async(email) => {
+const findUserByEmail = async (email) => {
     const sqlQuery = `SELECT * FROM Users WHERE Email = :email`;
 
     const result = await sequelize.query(sqlQuery, {
@@ -146,4 +146,59 @@ const getEmailById = async (id) => {
     return result[0]
 }
 
-module.exports = {user, OwnerNearME, findUserById,findUserByEmail, incLoyalty, ownerLoyalty, getIncomeDistribution, getEmailById};
+const updateCash = async (id, cashBalance) => {
+    const sqlQuery = `UPDATE Users SET cashBalance = :cashBalance WHERE UID = :id`;
+
+    return await sequelize.query(sqlQuery, {
+        replacements: {
+            id: id,
+            cashBalance: cashBalance,
+        },
+        type: QueryTypes.UPDATE
+    });
+};
+
+const calcAvgRating = async (UID) => {
+    const sqlQuery = `
+        SELECT AVG(rating) AS rating FROM reviews 
+        INNER JOIN items ON  reviews.itemId = items.itemId
+        WHERE ownerId = :ownerId;
+    `;
+
+    const result = await sequelize.query(sqlQuery, {
+        replacements: {
+            ownerId: UID
+        },
+        type: QueryTypes.SELECT
+    });
+
+    return result[0];
+}
+
+const updateAvgRating = async (UID, rate) => {
+    const sqlQuery = `UPDATE users SET avgRating = :rate WHERE UID=:UID`;
+
+    return await sequelize.query(sqlQuery, {
+        replacements: {
+            UID: UID,
+            rate:rate
+        },
+        type: QueryTypes.UPDATE
+    });
+};
+
+
+module.exports = {
+    user,
+    OwnerNearME,
+    findUserById,
+    findUserByEmail,
+    incLoyalty,
+    ownerLoyalty,
+    getIncomeDistribution,
+    getEmailById,
+    updateCash,
+    calcAvgRating,
+    updateAvgRating
+
+};
