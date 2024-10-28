@@ -90,4 +90,17 @@ const getReviews = async (customerId) => {
         type: QueryTypes.SELECT
     });
 }
-module.exports = {review, addReview, findReviewByCustomerAndItem, getItemsToReview,getReviews};
+
+const getRateItem = async (itemId) => {
+    const sqlQuery = `SELECT AVG(rating) AS rate FROM reviews WHERE itemId=:itemId`;
+
+    const result = await sequelize.query(sqlQuery, {
+        replacements: {
+            itemId: itemId,
+        },
+        type: QueryTypes.SELECT
+    });
+    return result[0];
+};
+
+module.exports = {review, addReview, findReviewByCustomerAndItem, getItemsToReview, getReviews, getRateItem};
