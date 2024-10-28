@@ -6,6 +6,10 @@ const sequelize = new Sequelize("rent_it_out", "root", "", {
   dialect: "mysql",
 });
 
+
+
+
+
 const db = {};
 db.sequelize = sequelize;
 module.exports = db;

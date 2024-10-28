@@ -14,6 +14,11 @@ router.post('/',
     itemController.itemObj,
     itemController.itemAdd);
 
+router.put('/image/:id',
+    validateLogging.isLoggedIn,
+    validateRole(['o']),
+    itemController.addImage);
+
 router.put('/:id',
     validateLogging.isLoggedIn,
     validateRole(['o']),
@@ -22,10 +27,6 @@ router.put('/:id',
 router.get('/NearMe',
     validateLogging.isLoggedIn,
     itemController.itemNearME);
-
-    
-
-
 
 
 router.delete('/delete/:id', validateLogging.isLoggedIn, itemController.itemDelete);

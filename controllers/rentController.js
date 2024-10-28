@@ -9,7 +9,7 @@ const  sendEmail  = require('../utils/emailService');
 const  priceCalculate  = require('../utils/price');
 const  calculateLateDays  = require('../utils/rent');
 
-
+const inspectionController = require('../controllers/inspectionController');
 
 
 const catchAsync = require('../utils/catchAsyn');
@@ -94,7 +94,7 @@ const updateRentStatus = catchAsync(async (req, res) => {
         return res.status(400).json({ errors: `There is no rent with ID ${rentalId}` });
     }
 
-    const itemRent = await Item.findItemById(rentToUpdate.itemtId);
+    const itemRent = await Item.findItemById(rentToUpdate.itemId);
     if (itemRent.ownerId !== ownerId) {
         return res.status(400).json({ errors: "You do not have permission to update this rent." });
     }
@@ -139,16 +139,24 @@ const handleRejectStatus = async (rentalId, itemRent, email, res) => {
     return res.status(200).json({ success: "Status updated to reject and email sent successfully." });
 };
 
-const handleReturnStatus = async (rentToUpdate, email, inspectionRequired, res) => {
+const handleReturnStatus = async (rentToUpdate, email, inspectionField, res) => {
     await calculateLateDays(rentToUpdate);
 
-    if (inspectionRequired) {
+    if (inspectionField) {
+
+        const insp = await inspectionController.openInspection(rentToUpdate.rentalId, email, inspectionField.imagePath);
+        if (insp && insp.error !== undefined) {
+            res.status(400).json(insp);
+            return;
+        }
         await sendEmail(email, "Inspection Scheduled", "An expert will inspect your returned item.");
-        return res.status(200).json({ message: "Inspection scheduled. Await expert feedback." });
+        res.status(200).json({ message: "Inspection scheduled. Await expert feedback." });
+        return;
     } else {
         // const refund = calculateRefund(rentToUpdate.securityDeposit);
         await sendEmail(email, "Item Returned Successfully", `Refund processed.`);
-        return res.status(200).json({ message: "Item returned and refund processed." });
+        res.status(200).json({ message: "Item returned and refund processed." });
+        return;
     }
 };
 

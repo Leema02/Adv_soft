@@ -1,4 +1,4 @@
-const { DataTypes } = require("sequelize");
+const {DataTypes, QueryTypes, Op, QueryError} = require("sequelize");
 const { sequelize } = require("./config.js");
 
 const expert = sequelize.define(
@@ -35,11 +35,24 @@ const findExpertToAssign = async (catId) => {
 
   const expertResult = await sequelize.query(sqlQuery, {
       replacements: { catId },
-      type: sequelize.QueryTypes.SELECT,
+      type: QueryTypes.SELECT,
   });
 
   return expertResult[0]; 
 };
 
+const addExpert = async (id , catId) => {
 
-module.exports = {expert,findExpertToAssign};
+    const sqlQuery = `INSERT INTO experts(expertId , catId) VALUES(:id,:catId);`;
+
+    return await sequelize.query(sqlQuery, {
+        replacements:{
+            id:id,
+            catId:catId
+        },
+        type:QueryTypes.INSERT
+    });
+
+};
+
+module.exports = {expert,findExpertToAssign, addExpert};

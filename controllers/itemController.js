@@ -114,6 +114,18 @@ const itemDelete = async (req, res) => {
 
 };
 
+const addImage = catchAsync(async (req , res) => {
+
+    const result = item.findItemById(req.params.id);
+    if (result.length === 0) {
+        res.status(400).json({errors: "there is no item with id " + req.params.id});
+        return;
+    }
+   const rr = await item.editImage(req.params.id,req.body.path);
+
+   res.status(200).json({success : "Added Image to Item " + req.params.id });
+});
+
 const filterByMinMax = async (req, res) => {
 
     const result = await item.filterItemsByMinMax(req.params.way + "lyRate", req.params.min, req.params.max);
@@ -200,6 +212,6 @@ const listItemsByLoyalty = async (req, res) => {
 
 module.exports = {itemAdd, itemObj, itemDelete, filterByMinMax, itemUpdate,
     itemNearME, getItemByIds, searchItemByName, filterItemsByAvailability,
-    listItemsByLoyalty
+    listItemsByLoyalty,addImage
 };
 
