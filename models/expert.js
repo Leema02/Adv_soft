@@ -29,4 +29,17 @@ const expert = sequelize.define(
   }
 );
 
-module.exports = expert;
+
+const findExpertToAssign = async (catId) => {
+  const sqlQuery = `SELECT expertId FROM experts WHERE catId = :catId ORDER BY RAND() LIMIT 1`;
+
+  const expertResult = await sequelize.query(sqlQuery, {
+      replacements: { catId },
+      type: sequelize.QueryTypes.SELECT,
+  });
+
+  return expertResult[0]; 
+};
+
+
+module.exports = {expert,findExpertToAssign};
