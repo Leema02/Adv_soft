@@ -6,7 +6,7 @@ const catRouter = require('./routers/categoryRouter');
 const eventRouter = require('./routers/eventRouter');
 const rentRouter = require('./routers/rentRouter');
 const deliveryRouter = require('./routers/deliveryRouter');
-
+const pickupLocationRouter = require('./routers/pickupLocationRouter'); 
 
 
 const cookieParser = require('cookie-parser');
@@ -22,7 +22,7 @@ app.use('/cat',catRouter);
 app.use('/event',eventRouter);
 //app.use('/rent',rentRouter);
 app.use('/delivery', deliveryRouter);
-
+app.use('/api', pickupLocationRouter);
 
 
 
