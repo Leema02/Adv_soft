@@ -19,7 +19,7 @@ app.use('/', authRouter); // Use the auth router
 app.use('/item',itemRouter);
 app.use('/cat',catRouter);
 app.use('/event',eventRouter);
-app.use('/rent',rentRouter);
+//app.use('/rent',rentRouter);
 app.use('/delivery', deliveryRouter);
 
 

@@ -57,4 +57,39 @@ const createDelivery = async (rentalId, method, estimatedDeliveryTime) => {
       }
     };
 
-module.exports = { createDelivery };
+const getDeliveryStatusByRentalId = async (rentalId) => {
+      const sqlQuery = `
+        SELECT status, method, estimatedDeliveryTime, updatedAt
+        FROM Deliveries
+        WHERE rentalId = :rentalId AND method = 'd'
+      `;
+    
+      const results = await sequelize.query(sqlQuery, {
+        replacements: { rentalId },
+        type: sequelize.QueryTypes.SELECT,
+      });
+    
+      return results;
+    };
+    
+    
+const updateDeliveryStatusInDB = async (deliveryId, status) => {
+        const sqlQuery = `
+            UPDATE deliveries 
+            SET status = :status, updatedAt = NOW() 
+            WHERE deliveryId = :deliveryId
+        `;
+    
+        return await sequelize.query(sqlQuery, {
+            replacements: { deliveryId, status },
+            type: sequelize.QueryTypes.UPDATE,
+        });
+    };
+    
+module.exports = { 
+        delivery, 
+        createDelivery, 
+        getDeliveryStatusByRentalId,
+        updateDeliveryStatusInDB 
+};
+        
