@@ -3,6 +3,7 @@ const item = require('../models/item');
 const User = require('../models/user');
 const inspection = require('../models/inspection');
 const refund = require('../models/refund');
+const sendEmail = require("./emailService");
 
 
 const calculatePenalties = async (rental) => {
@@ -19,6 +20,7 @@ const calculatePenalties = async (rental) => {
     if (rental.Status == 'return' && insp && insp.Status == true) {
         if (rental.damageFee > rentedItem.SecurityDeposit) {
             totalPenalties += rental.damageFee - rentedItem.SecurityDeposit;
+
         }
     }
 
@@ -28,7 +30,7 @@ const calculatePenalties = async (rental) => {
 const refundCash = async (rental) => {
     const rentedItem = await item.findItemById(rental.itemId);
     const customer = await User.findUserById(rental.customerId);
-
+    const email = customer.Email;
     if (!rentedItem || !customer) {
         throw new Error("Rented item or customer not found.");
     }
@@ -46,7 +48,12 @@ const refundCash = async (rental) => {
     if (refundableAmount < 0) {
         refundableAmount = 0;
     }
-    console.log(penalties);
+
+    await sendEmail(
+        email,
+        "Penalities on you",
+        `Total penalties on you is ${penalties} due to rent ${rentedItem.ItemName}`
+    );
     customer.cashBalance += refundableAmount;
     await User.updateCash(customer.UID, customer.cashBalance);
 

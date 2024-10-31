@@ -1,5 +1,5 @@
 const express = require('express');
-const authRouter = require('./routers/auth'); // Adjust the path accordingly
+const authRouter = require('./routers/authRouter'); // Adjust the path accordingly
 const itemRouter = require('./routers/itemRouter');
 const catRouter = require('./routers/categoryRouter');
 const eventRouter = require('./routers/eventRouter');

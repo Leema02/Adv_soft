@@ -1,5 +1,7 @@
 const {sequelize} = require("./config.js");
 const {DataTypes, QueryTypes} = require("sequelize");
+const validator = require("validator");
+const AppError = require("../utils/AppError");
 
 const user = sequelize.define("User", {
     UID: {
@@ -50,6 +52,27 @@ const user = sequelize.define("User", {
     },
 });
 
+
+const addUser = async (username, email, hashedPassword, mobile, city, street, role) => {
+
+    try {
+        await sequelize.query(
+            'INSERT INTO Users (UName, Email, Password, Mobile, City, Street, role) VALUES (:username, :email, :password, :mobile, :city, :street, :role)',
+            {
+                replacements: {username, email, password: hashedPassword, mobile, city, street, role},
+                type: QueryTypes.INSERT,
+            }
+        );
+    } catch (error) {
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({message: 'Mobile number already exists'});
+        } else {
+            console.error("SQL Error:", error);
+            return res.status(500).json({message: 'Database operation failed'});
+        }
+    }
+
+}
 const OwnerNearME = async (Usercity) => {
     const sqlQuery = `SELECT UID FROM Users WHERE City = :Usercity AND role = 'o'`;
 
@@ -83,6 +106,18 @@ const findUserByEmail = async (email) => {
         type: QueryTypes.SELECT,
     });
     console.log("Query result:", result);
+
+    return result[0];
+};
+
+const findUserByUsername = async (username) => {
+    const queryUser = `SELECT * FROM Users WHERE UName = :username `;
+
+
+    const result = await sequelize.query(queryUser, {
+        replacements: {username}, // Use 'replacements' option correctly
+        type: QueryTypes.SELECT
+    });
 
     return result[0];
 };
@@ -181,11 +216,31 @@ const updateAvgRating = async (UID, rate) => {
     return await sequelize.query(sqlQuery, {
         replacements: {
             UID: UID,
-            rate:rate
+            rate: rate
         },
         type: QueryTypes.UPDATE
     });
 };
+
+const loginFunc = async (username, email, password) => {
+    let query;
+    let replacement
+    if (email) {
+        query = `SELECT * FROM Users WHERE Email = :email LIMIT 1`;
+        replacement = {email};
+    } else if (username) {
+        query = `SELECT * FROM Users WHERE UName = :username LIMIT 1`;
+        replacement = {username};
+    }
+
+    const result = await sequelize.query(query, {
+        replacements: replacement,
+        type: QueryTypes.SELECT
+    });
+
+    return result[0];
+
+}
 
 
 module.exports = {
@@ -199,6 +254,9 @@ module.exports = {
     getEmailById,
     updateCash,
     calcAvgRating,
-    updateAvgRating
+    updateAvgRating,
+    loginFunc,
+    findUserByUsername,
+    addUser
 
 };
