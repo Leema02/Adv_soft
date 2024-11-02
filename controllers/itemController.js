@@ -196,7 +196,7 @@ const listItemsByLoyalty = async (req, res) => {
     const catId = req.params.catID;
 
     try {
-        const items = await getItemsByCategoryAndLoyalty(catId);
+        const items = await item.getItemsByCategoryAndLoyalty(catId);
 
         if (items.length === 0) {
             return res.status(204).json({message: "No items found in this category"});
