@@ -6,6 +6,9 @@ const pricing = require('../models/pricing');
 const catchAsync = require('../utils/catchAsyn');
 const AppError = require('../utils/AppError');
 
+
+
+
 const itemAdd = async (req, res) => {
 
     const catId = await category.findCategoryById(req.body.catId);
