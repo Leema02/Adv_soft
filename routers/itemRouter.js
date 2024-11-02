@@ -40,7 +40,7 @@ router.get('/:catId/list/search',itemController.searchItemByName);
 router.get('/:catId/list/:idItem',itemController.getItemByIds);
 
 router.get('/:catID/list/ava/:availability', validateItem.identifyAvailabilityAndValidate, itemController.filterItemsByAvailability);
-router.get('/:catID/list', validateCat.validateCategory, itemController.listItemsByLoyalty);
+router.get('/:catID/list', itemController.listItemsByLoyalty);
 
 router.get('/rate/:itemId', itemController.getRateOfItem);
 module.exports = router;
