@@ -14,6 +14,11 @@ router.post('/',
     itemController.itemObj,
     itemController.itemAdd);
 
+router.put('/image/:id',
+    validateLogging.isLoggedIn,
+    validateRole(['o']),
+    itemController.addImage);
+
 router.put('/:id',
     validateLogging.isLoggedIn,
     validateRole(['o']),
@@ -22,10 +27,6 @@ router.put('/:id',
 router.get('/NearMe',
     validateLogging.isLoggedIn,
     itemController.itemNearME);
-
-    
-
-
 
 
 router.delete('/delete/:id', validateLogging.isLoggedIn, itemController.itemDelete);
@@ -38,7 +39,8 @@ router.get('/filterRange/:way/:min/:max',
 router.get('/:catId/list/search',itemController.searchItemByName);
 router.get('/:catId/list/:idItem',itemController.getItemByIds);
 
-router.get('/item/:catID/list/ava/:availability', validateItem.identifyAvailabilityAndValidate, itemController.filterItemsByAvailability);
-router.get('/item/:catID/list', validateCat.validateCategory, itemController.listItemsByLoyalty);
+router.get('/:catID/list/ava/:availability', validateItem.identifyAvailabilityAndValidate, itemController.filterItemsByAvailability);
+router.get('/:catID/list', itemController.listItemsByLoyalty);
 
+router.get('/rate/:itemId', itemController.getRateOfItem);
 module.exports = router;

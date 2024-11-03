@@ -10,6 +10,10 @@ const Rent = require("../models/rent.js");
 const Delivery = require("../models/delivery.js");
 const Expert = require("../models/expert.js");
 const event = require("../models/event.js");
+const refund = require("../models/refund.js");
+const income = require("../models/income.js");
+
+
 
 
 
@@ -51,6 +55,6 @@ const event = require("../models/event.js");
 // Rent.hasOne(Delivery, { foreignKey: 'rentalId', onDelete: 'CASCADE' });
 
 
-sequelize.sync({ force: true }).then(() => {
-  console.log("Synced");
+sequelize.sync({ alter: true }).then(() => {
+  console.log("Database synchronized with changes.");
 });

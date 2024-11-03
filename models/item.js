@@ -45,15 +45,16 @@ const item = sequelize.define("Item", {
     Description: {
         type: DataTypes.TEXT,
     },
-    ConditionBefore: {
-        type: DataTypes.TEXT,
+    ImagePath: {
+        type: DataTypes.TEXT
     },
     SecurityDeposit: {
         type: DataTypes.DOUBLE,
     },
+    
 });
 
-const insertItem = async (itemObj) => {
+const insertItem = async (itemObj,image) => {
     const sqlQuery = `
             INSERT INTO Items (
                 ownerId, catId, priceModelId , ItemName, 
@@ -203,6 +204,17 @@ const getItemByCatAndItemId = async (catId, itemId) => {
     })
 };
 
+const editImage = async (itemId, path) => {
+    const sqlQuery = `UPDATE Items SET ImagePath = :path WHERE itemId = :itemId`;
+
+    return await sequelize.query(sqlQuery, {
+        replacements: {
+            itemId: itemId,
+            path: path
+        },
+        type: QueryTypes.UPDATE
+    });
+};
 
 const getLikeItemName = async (catId, itemName) => {
     const sqlQuery = `SELECT * FROM Items WHERE catId = :catId AND ItemName LIKE :itemName`;
@@ -218,58 +230,59 @@ const getLikeItemName = async (catId, itemName) => {
 
 const getItemsByCategoryAndAvailability = async (catId, availability) => {
     const sqlQuery = `SELECT * FROM Items WHERE catId = :catId AND Availability = :availability`;
-  
+
     return await sequelize.query(sqlQuery, {
-        replacements: { catId: catId, availability: availability },
+        replacements: {catId: catId, availability: availability},
         type: QueryTypes.SELECT
     });
-  };
+};
 
-  const getItemsByCategoryAndLoyalty = async (catId) => {
+const getItemsByCategoryAndLoyalty = async (catId) => {
     const sqlQuery = `
       SELECT I.*, U.loyalty, U.role 
       FROM Items I
       JOIN Users U ON I.ownerId = U.UID
       WHERE I.catId = :catId AND U.role = 'o'
     `;
-  
+
     const items = await sequelize.query(sqlQuery, {
-      replacements: { catId },
-      type: QueryTypes.SELECT,
+        replacements: {catId},
+        type: QueryTypes.SELECT,
     });
-  
+
     return items.map(item => {
-      const roundedLoyalty = Math.round(item.loyalty);
-      let loyaltyGrade;
-  
-      switch (roundedLoyalty) {
-        case 5:
-          loyaltyGrade = 'A'; // Best loyalty
-          break;
-        case 4:
-          loyaltyGrade = 'B';
-          break;
-        case 3:
-          loyaltyGrade = 'C';
-          break;
-        case 2:
-          loyaltyGrade = 'D';
-          break;
-        case 1:
-        default:
-          loyaltyGrade = 'E'; // Lowest loyalty
-      }
-  
-      return {
-        ...item, 
-        loyaltyGrade, 
-      };
+        const roundedLoyalty = Math.round(item.loyalty);
+        let loyaltyGrade;
+
+        switch (roundedLoyalty) {
+            case 5:
+                loyaltyGrade = 'A'; // Best loyalty
+                break;
+            case 4:
+                loyaltyGrade = 'B';
+                break;
+            case 3:
+                loyaltyGrade = 'C';
+                break;
+            case 2:
+                loyaltyGrade = 'D';
+                break;
+            case 1:
+            default:
+                loyaltyGrade = 'E'; // Lowest loyalty
+        }
+
+        return {
+            ...item,
+            loyaltyGrade,
+        };
     });
-  };
+};
+
 
 module.exports = {
     item, insertItem, findItemById, updateItem, ItemsNearME, deleteItemById,
-    filterItemsByMinMax, getItemByCatAndItemId,getLikeItemName, getItemsByCategoryAndAvailability,
-    getItemsByCategoryAndLoyalty
+    filterItemsByMinMax, getItemByCatAndItemId, getLikeItemName, getItemsByCategoryAndAvailability,
+    getItemsByCategoryAndLoyalty,editImage
 };
 
