@@ -1,3 +1,4 @@
+
 const express = require('express');
 const router = express.Router();
 const rentController = require('../controllers/rentController');
@@ -6,7 +7,6 @@ const extendRentController = require('../controllers/extendRentalController');
 const validateLogging = require('../middleware/validateLogging');
 const validateRent = require('../middleware/validateRent');
 const validateRole = require('../middleware/validateRole');
-
 
 
 router.post('/',validateLogging.isLoggedIn,validateRole(['u'])

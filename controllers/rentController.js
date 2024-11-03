@@ -1,3 +1,5 @@
+
+
 const Rent = require('../models/rent');
 const Item = require('../models/item');
 const User = require('../models/user');
@@ -8,6 +10,7 @@ const Expert = require('../models/expert');
 const  sendEmail  = require('../utils/emailService');
 const  priceCalculate  = require('../utils/price');
 const  calculateLateDays  = require('../utils/rent');
+
 
 const inspectionController = require('../controllers/inspectionController');
 
@@ -64,14 +67,17 @@ const rentDelete = catchAsync(async (req, res) => {
 });
 
 const rentList = catchAsync(async (req, res) => {
+   
 
      const id=res.locals.user.UID
      const role=res.locals.user.role
      const rents=await Rent.rentList(id,role);
-    
-     res.status(200).json(rents);
-    
-    });
+    await Rent.rentDelete(id);
+    return res.status(200).json({success: "rent with id " +id + " has been deleted successfully"});
+
+});
+
+
 
 const statusRentList = catchAsync(async (req, res) => {
 
@@ -83,6 +89,7 @@ const statusRentList = catchAsync(async (req, res) => {
      res.status(200).json(rents);
     
 });
+
 
 const updateRentStatus = catchAsync(async (req, res) => {
     const ownerId = res.locals.user.UID;
@@ -169,7 +176,6 @@ const createIncome=async(totalPrice,ownerId,rentalId)=>{
 
 }
 
-
-module.exports = {rentList,rentAdd,rentDelete,rentList,statusRentList,updateRentStatus};
+ module.exports = {rentList,rentAdd,rentDelete,rentList,statusRentList,updateRentStatus};
 
 
