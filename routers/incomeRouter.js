@@ -11,7 +11,6 @@ router.get('/today',validateLogging.isLoggedIn,validateRole(['a','o','e']),Incom
 router.get('/DoY/:year/:month/:day',validateLogging.isLoggedIn,validateRole(['a','o','e']),IncomeReport.getIncomeReportByDay);
 router.get('/MoY/:year/:month',validateLogging.isLoggedIn,validateRole(['a','o','e']),IncomeReport.getIncomeReportByMonth);
 router.get('/year/:year',validateLogging.isLoggedIn,validateRole(['a','o','e']),IncomeReport.getIncomeReportByYear);
-router.get('/trends/:startYear/:endYear',validateLogging.isLoggedIn,validateRole(['a','o','e']),IncomeReport.getIncomeTrends);
 router.get('/monthlyReport/:year',validateLogging.isLoggedIn,validateRole(['a','o','e']),IncomeReport.getMonthlyIncomeReport);
 
 

@@ -51,9 +51,10 @@ const item = sequelize.define("Item", {
     SecurityDeposit: {
         type: DataTypes.DOUBLE,
     },
+    
 });
 
-const insertItem = async (itemObj) => {
+const insertItem = async (itemObj,image) => {
     const sqlQuery = `
             INSERT INTO Items (
                 ownerId, catId, priceModelId , ItemName, 

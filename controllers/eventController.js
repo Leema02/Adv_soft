@@ -11,7 +11,7 @@ const eventAdd = catchAsync(async (req, res) => {
         res.status(400).json({errors: "there is no category with id " + req.body.catId});
     const newEvent = await Event.addEvent( eventName, discountPercentage, startDate,endDate,catId);
 
-    res.status(200).json({ success: "Event with id has been created" });
+    res.status(200).json({ success: "Event  "+eventName +" has been created successfully" });
 });
 
 const eventUpdate = catchAsync(async (req, res) => {
