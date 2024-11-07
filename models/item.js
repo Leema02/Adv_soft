@@ -45,6 +45,9 @@ const item = sequelize.define("Item", {
     Description: {
         type: DataTypes.TEXT,
     },
+    ConditionBefore:{
+        type:DataTypes.TEXT
+    },
     ImagePath: {
         type: DataTypes.TEXT
     },

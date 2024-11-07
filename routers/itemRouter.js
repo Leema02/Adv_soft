@@ -29,7 +29,7 @@ router.get('/NearMe',
     itemController.itemNearME);
 
 
-router.delete('/delete/:id', validateLogging.isLoggedIn, itemController.itemDelete);
+router.delete('/:id', validateLogging.isLoggedIn, itemController.itemDelete);
 
 router.get('/filterRange/:way/:min/:max',
     validateItem.identifyPriceWayAndValidate,
