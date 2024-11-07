@@ -7,6 +7,7 @@ const catchAsync = require('../utils/catchAsyn');
 const AppError = require('../utils/AppError');
 const Review = require('../models/review');
 
+
 const itemAdd = async (req, res) => {
 
     const catId = await category.findCategoryById(req.body.catId);
@@ -194,8 +195,7 @@ const filterItemsByAvailability = async (req, res) => {
 
 const listItemsByLoyalty = catchAsync(async (req, res) => {
     const catId = req.params.catID;
-
-    console.log("heloo");
+    
     const items = await item.getItemsByCategoryAndLoyalty(catId);
 
     if (items.length === 0) {

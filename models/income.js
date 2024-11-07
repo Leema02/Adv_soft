@@ -136,43 +136,27 @@ const Income = sequelize.define('Income', {
     return result[0] || { totalIncome: 0 }; // Return 0 if no records found
 };
 
-const getIncomeTrends = async (startYear, endYear, userRole, id) => {
-  let sqlQuery = `
-      SELECT YEAR(incomes.createdAt) AS year, 
-             SUM(incomes.totalIncome) AS totalIncome
-      FROM incomes
-      INNER JOIN rents ON rents.rentalId = incomes.rentalId
-      INNER JOIN items ON items.itemId = rents.itemtId
-      WHERE YEAR(incomes.createdAt) BETWEEN :startYear AND :endYear
-  `;
 
-  const whereConditions = [];
-
+const getIncomeField = (userRole) => {
+  let incomeField;
   if (userRole === 'e') {
-      whereConditions.push('rents.expertId = :id'); 
+    incomeField = 'expertShare';
   } else if (userRole === 'o') {
-      whereConditions.push('items.ownerId = :id'); 
+    incomeField = 'ownertShare';
+  } else {
+    incomeField = 'adminShare'; 
   }
-
-  if (whereConditions.length > 0) {
-      sqlQuery += ' AND ' + whereConditions.join(' AND ');
-  }
-
-  sqlQuery += ' GROUP BY YEAR(incomes.createdAt) ORDER BY YEAR(incomes.createdAt);';
-
-  const result = await sequelize.query(sqlQuery, {
-      replacements: { startYear, endYear, id },
-      type: QueryTypes.SELECT,
-  });
-
-  return result;
+  return incomeField;
 };
 
+
 const getMonthlyIncomeReport = async (year, userRole, id) => {
+  let incomeField=getIncomeField(userRole)
+
   let sqlQuery = `
       SELECT 
           MONTH(incomes.createdAt) AS month,
-          SUM(incomes.totalIncome) AS totalIncome
+          SUM(incomes.${incomeField}) AS totalIncome
       FROM incomes
   `;
 
@@ -185,7 +169,7 @@ const getMonthlyIncomeReport = async (year, userRole, id) => {
   } else if (userRole === 'o') {
       sqlQuery += `
           INNER JOIN rents ON rents.rentalId = incomes.rentalId
-          INNER JOIN items ON items.itemId = rents.itemtId
+          INNER JOIN items ON items.itemId = rents.itemtId 
           WHERE YEAR(incomes.createdAt) = :year
           AND items.ownerId = :id
       `;
@@ -215,4 +199,4 @@ const getMonthlyIncomeReport = async (year, userRole, id) => {
   
   
 
-  module.exports={Income,addIncome,getTotalIncomeIn,getIncomeTrends,getMonthlyIncomeReport}
+  module.exports={Income,addIncome,getTotalIncomeIn,getMonthlyIncomeReport}

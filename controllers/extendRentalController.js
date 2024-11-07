@@ -79,12 +79,16 @@ const handleAcceptResponse = async (rental, item, email, newEndDate, res) => {
         `Your extension request has been accepted until ${newEndDate}. The total price now is $${totalPriceAfterExtend}. The extra amount you need to pay is $${toPay}.`
     );
 
-    return res.status(200).json({ message: 'Rental Extension Accepted Successfully' });
-};
+    return res.status(200).json({
+        "message": "Rental Extension Accepted Successfully",
+        ownerNotification: `An email has been sent to the customer with the following details: Extension accepted until: ${newEndDate} Total price: $${totalPriceAfterExtend} Extra amount to pay: $${toPay}`
+    }
+    
+    );};
 
 const handleRejectResponse = async (email, res) => {
     await sendEmail(email, 'Rental Extension Rejected', 'Your extension request has been rejected.');
-    return res.status(200).json({ message: 'Rental Extension Rejected Successfully' });
+    return res.status(200).json({ message: 'Rental Extension Rejected Successfully and email sent to the customer' });
 };
 
 

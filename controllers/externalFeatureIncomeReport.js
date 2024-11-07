@@ -171,36 +171,14 @@ const getIncomeReportToday=catchAsync(async(req,res)=>{
     });  
 });
 
-const getIncomeTrends = catchAsync(async (req, res) => {
-    const id = res.locals.user.UID;
-    const userRole = res.locals.user.role;
-
-    const startYear = Number(req.params.startYear);
-    const endYear = Number(req.params.endYear);
-    console.log(startYear,endYear);
-    
-
-    const trends = await Income.getIncomeTrends(startYear, endYear, userRole,id,userRole);
-
-    res.status(200).json({
-        success: true,
-        message: 'Income trends retrieved successfully',
-        data: {
-            userId: id,
-            userRole: userRole,
-            startYear,
-            endYear,
-            trends,
-        }
-    });
-});
 
 const getMonthlyIncomeReport = catchAsync(async (req, res) => {
     const id = res.locals.user.UID;
     const userRole = res.locals.user.role;
 
     const year = Number(req.params.year);
-
+    console.log(year, userRole, id);
+    
     const monthlyReport = await Income.getMonthlyIncomeReport(year, userRole, id);
 
     res.status(200).json({
@@ -225,5 +203,5 @@ const getMonthlyIncomeReport = catchAsync(async (req, res) => {
 
 
 module.exports={getIncomeThisMonth,getIncomeReportByMonth,getIncomeReportByYear,
-    getIncomeReportByDay,getIncomeReportToday,getIncomeTrends,getMonthlyIncomeReport}
+    getIncomeReportByDay,getIncomeReportToday,getMonthlyIncomeReport}
 
