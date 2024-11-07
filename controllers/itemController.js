@@ -192,35 +192,32 @@ const filterItemsByAvailability = async (req, res) => {
     }
 };
 
-const listItemsByLoyalty = async (req, res) => {
+const listItemsByLoyalty = catchAsync(async (req, res) => {
     const catId = req.params.catID;
 
-    try {
-        const items = await getItemsByCategoryAndLoyalty(catId);
+    console.log("heloo");
+    const items = await item.getItemsByCategoryAndLoyalty(catId);
 
-        if (items.length === 0) {
-            return res.status(204).json({message: "No items found in this category"});
-        }
-
-        const sortedItems = items.sort((a, b) => a.loyaltyGrade.localeCompare(b.loyaltyGrade));
-
-        res.status(200).json(sortedItems);
-    } catch (error) {
-        console.error("Error in listItemsByLoyalty:", error);
-        res.status(500).json({error: 'An error occurred while retrieving items.'});
+    if (items.length === 0) {
+        return res.status(204).json({message: "No items found in this category"});
     }
-};
+
+    const sortedItems = items.sort((a, b) => a.loyaltyGrade.localeCompare(b.loyaltyGrade));
+
+    res.status(200).json(sortedItems);
+
+});
 
 const getRateOfItem = catchAsync(async (req, res) => {
     const itemId = req.params.itemId;
 
     const result = await Review.getRateItem(Number(itemId));
 
-    res.status(200).json({result : result.rate});
+    res.status(200).json({result: result.rate});
 });
 module.exports = {
     itemAdd, itemObj, itemDelete, filterByMinMax, itemUpdate,
     itemNearME, getItemByIds, searchItemByName, filterItemsByAvailability,
-    listItemsByLoyalty, addImage,getRateOfItem
+    listItemsByLoyalty, addImage, getRateOfItem
 };
 
