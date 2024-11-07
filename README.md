@@ -1,4 +1,4 @@
-# RentItOut ℹ️
+# RentItOut  ℹ️
 
 Welcome to **RentItOut** – a backend API designed to support a rental marketplace where users can list and rent everyday items. This project promotes a circular economy, enabling users to rent out items they own but rarely use, such as tools, sports equipment, and party supplies, to others in their community.
 
@@ -65,7 +65,7 @@ Usage: Nodemailer is used to send notification emails to users and admins. This 
  - Axios
  - Github
 
-## Api Documentation 
+## Api Documentation 📄
 You can see our api documenation (wiki) using postman [here](https://documenter.getpostman.com/view/39143337/2sAY518Kpm#3c3d74e7-0ba3-4731-a9d0-bfd76a9f660f)
 
 ## Getting Started 🚀
