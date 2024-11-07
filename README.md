@@ -39,10 +39,14 @@ Welcome to **RentItOut** – a backend API designed to support a rental marketpl
 
 ## External API
 1. **Foursquare API**
+
 Purpose: To provide location-based services, such as fetching nearby pickup locations for users based on their current coordinates.
+
 Usage: The Foursquare API is utilized to enhance the user experience by enabling users to search for nearby places, such as pickup points or service centers, within a specified radius. This integration ensures that users receive real-time information and recommendations for locations close to their specified latitude and longitude.
-2. **Nodemailer**
+3. **Nodemailer**
+
 Purpose: To handle automated email communication within the application.
+
 Usage: Nodemailer is used to send notification emails to users and admins. This includes sending confirmation emails for deliveries, pickup requests, and rental transactions. The use of Nodemailer helps maintain seamless and timely communication, ensuring users receive important updates directly to their inboxes.
 
 ## Tech Stack
