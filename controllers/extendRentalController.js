@@ -29,8 +29,8 @@ const extendRental =catchAsync( async (req, res) => {
         return res.status(400).json({ message: 'Item is not available for the requested extension' });
     }
     
-    const { email } = await User.getEmailById(rental.customerId);
-
+     const item=await Item.findItemById(rental.itemtId)    
+    const { email } = await User.getEmailById(item.ownerId);
     await sendEmail(email, 'Rental Extension Request', `Customer ${res.locals.user.UName} with rental id ${rentalId} to item with id ${rental.itemtId}  has requested to extend the rental until ${newEndDate}.`);
 
     return res.status(200).json({ message: 'Extension request sent', rental });
