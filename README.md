@@ -39,6 +39,7 @@ Welcome to **RentItOut** – a backend API designed to support a rental marketpl
   - **User**: Rents items and interacts with listings.
   - **Owner**: Item management and can open inspections if there is an dispute between owner and user after rent
   - **Expert**: Inspects items to ensure quality and safety.
+- **Income Reports** provides a detailed analysis of the income generated from rental transactions within a specified period.
 - **Error Handling**: Comprehensive error handling by applying middlewares for every api request to our endpoints
 
 ## External API 📝
