@@ -17,6 +17,7 @@ const inspectionController = require('../controllers/inspectionController');
 
 const catchAsync = require('../utils/catchAsyn');
 const bodyParser = require('body-parser');
+const {refundCash} = require("../utils/penalty");
 
 const rentAdd = catchAsync(async (req, res) => {
     const customerId=res.locals.user.UID
@@ -160,7 +161,7 @@ const handleReturnStatus = async (rentToUpdate, email, inspectionField, res) => 
         res.status(200).json({ message: "Inspection scheduled. Await expert feedback." });
         return;
     } else {
-        // const refund = calculateRefund(rentToUpdate.securityDeposit);
+        await refundCash(rentToUpdate);
         await sendEmail(email, "Item Returned Successfully", `Refund processed.`);
         res.status(200).json({ message: "Item returned and refund processed." });
         return;
