@@ -42,17 +42,17 @@ Welcome to **RentItOut** – a backend API designed to support a rental marketpl
 - **Income Reports** provides a detailed analysis of the income generated from rental transactions within a specified period.
 - **Error Handling**: Comprehensive error handling by applying middlewares for every api request to our endpoints
 
-## External API 📝
+## External APIs 📝
 
 1. **Foursquare API**
 
-Purpose: To provide location-based services, such as fetching nearby pickup locations for users based on their current coordinates.
-Usage: The Foursquare API is utilized to enhance the user experience by enabling users to search for nearby places, such as pickup points or service centers, within a specified radius. This integration ensures that users receive real-time information and recommendations for locations close to their specified latitude and longitude.
+    Purpose: To provide location-based services, such as fetching nearby pickup locations for users based on their current coordinates.                                                                                                           
+    Usage: The Foursquare API is utilized to enhance the user experience by enabling users to search for nearby places, such as pickup points or service centers, within a specified radius. This integration ensures that users receive real-time information and recommendations for locations close to their specified latitude and longitude.
 
 2. **Nodemailer**
 
-Purpose: To handle automated email communication within the application.
-Usage: Nodemailer is used to send notification emails to users and admins. This includes sending confirmation emails for deliveries, pickup requests, and rental transactions. The use of Nodemailer helps maintain seamless and timely communication, ensuring users receive important updates directly to their inboxes.
+    Purpose: To handle automated email communication within the application.                                                                                                                                                                      
+    Usage: Nodemailer is used to send notification emails to users and admins. This includes sending confirmation emails for deliveries, pickup requests, and rental transactions. The use of Nodemailer helps maintain seamless and timely communication, ensuring users receive important updates directly to their inboxes.
 
 ## Tools And Libraries 🛠️
  - Node.Js 
